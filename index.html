@@ -1238,18 +1238,41 @@
             
             .projects-grid,
             .philosophy-grid,
-            .achievements-grid,
             .stats-container {
                 grid-template-columns: 1fr;
                 gap: 15px;
                 margin: 20px 0;
             }
             
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                margin: 20px 0;
+            }
+            
             .project-card,
             .philosophy-card,
-            .achievement-card,
             .stat-card {
                 padding: 15px;
+            }
+            
+            .achievement-card {
+                padding: 10px;
+            }
+            
+            .achievement-card img {
+                width: 32px;
+                height: 32px;
+                margin-bottom: 8px;
+            }
+            
+            .achievement-card h4 {
+                font-size: 0.75rem;
+                margin: 8px 0 4px 0;
+            }
+            
+            .achievement-card p {
+                font-size: 0.7rem;
             }
             
             .legend {
@@ -1341,9 +1364,32 @@
             }
             
             .project-card,
-            .philosophy-card,
-            .achievement-card {
+            .philosophy-card {
                 padding: 12px;
+            }
+            
+            .achievement-card {
+                padding: 8px;
+            }
+            
+            .achievement-card img {
+                width: 28px;
+                height: 28px;
+                margin-bottom: 6px;
+            }
+            
+            .achievement-card h4 {
+                font-size: 0.7rem;
+                margin: 6px 0 3px 0;
+            }
+            
+            .achievement-card p {
+                font-size: 0.65rem;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
             
             .legend {
@@ -2257,15 +2303,21 @@
         // Scroll animation - Terminal style reveal with typing
         // Only observe .section elements, not .hero-section
         const sections = document.querySelectorAll('.section:not(.hero-section)');
+        
+        // Adaptive threshold based on screen size
+        const isMobile = window.innerWidth <= 768;
         const observerOptions = {
-            threshold: 0.95, // Section must be 95% visible (almost full screen)
-            rootMargin: '0px'
+            threshold: isMobile ? 0.5 : 0.95, // Lower threshold for mobile (50% vs 95%)
+            rootMargin: isMobile ? '0px' : '0px'
         };
 
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
-                // Only trigger when section is almost fully visible (snapped to viewport)
-                if (entry.intersectionRatio >= 0.95 && !entry.target.classList.contains('terminal-reveal')) {
+                // Adaptive threshold check based on screen size
+                const currentThreshold = window.innerWidth <= 768 ? 0.5 : 0.95;
+                
+                // Only trigger when section is visible enough
+                if (entry.intersectionRatio >= currentThreshold && !entry.target.classList.contains('terminal-reveal')) {
                     entry.target.classList.add('terminal-reveal');
                     
                     // Stop previous animations before starting new one
@@ -2278,7 +2330,7 @@
                     setTimeout(() => {
                         typeSectionContent(entry.target);
                     }, 600);
-                } else if (entry.intersectionRatio < 0.5) {
+                } else if (entry.intersectionRatio < 0.3) {
                     // If section is no longer visible, stop its animations
                     if (currentTypingSection === entry.target) {
                         stopAllTypingAnimations();
