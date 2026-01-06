@@ -1,6 +1,5 @@
 node_modules/
 screenshots/
-preview.gif
 *.log
 .DS_Store
 server.pid
