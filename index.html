@@ -398,6 +398,90 @@
             transition: all 0.3s ease-out;
         }
 
+        @media (max-width: 768px) {
+            .section-indicator {
+                top: 10px;
+                right: 10px;
+                transform: scale(0.8);
+            }
+
+            .section-wheel {
+                width: 140px;
+                height: 60px;
+            }
+
+            .section-number {
+                height: 30px;
+                line-height: 30px;
+                font-size: 7px;
+                padding: 0 5px;
+            }
+
+            .section-number.active {
+                font-size: 9px;
+            }
+
+            .section-number.inactive {
+                font-size: 6px;
+            }
+
+            .section-indicator-label {
+                font-size: 8px;
+                margin-bottom: 3px;
+            }
+
+            /* Ensure sections have padding to avoid overlap */
+            .section {
+                padding-top: 80px;
+            }
+
+            .hero-section {
+                padding-top: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-indicator {
+                top: 5px;
+                right: 5px;
+                transform: scale(0.7);
+            }
+
+            .section-wheel {
+                width: 120px;
+                height: 50px;
+            }
+
+            .section-number {
+                height: 25px;
+                line-height: 25px;
+                font-size: 6px;
+                padding: 0 3px;
+            }
+
+            .section-number.active {
+                font-size: 8px;
+            }
+
+            .section-number.inactive {
+                font-size: 5px;
+            }
+
+            .section-indicator-label {
+                font-size: 7px;
+                margin-bottom: 2px;
+            }
+
+            /* More padding for very small screens */
+            .section {
+                padding-top: 70px;
+            }
+
+            .hero-section {
+                padding-top: 70px;
+            }
+        }
+
         .section-indicator:hover {
             z-index: 1001;
         }
@@ -844,6 +928,11 @@
 
             .section-content {
                 padding: 20px;
+                padding-top: 80px; /* Extra padding to avoid overlap with section indicator */
+            }
+
+            .hero-section {
+                padding-top: 80px; /* Extra padding to avoid overlap with section indicator */
             }
 
             h2 {
