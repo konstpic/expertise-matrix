@@ -111,13 +111,14 @@ async function generatePreview() {
             
             console.log('  🎬 Creating final GIF...');
             // Use palette to create optimized GIF
+            // First scale and set fps, then apply palette
             const gifCommand = [
                 'ffmpeg',
                 '-y',
                 '-framerate', '10',
                 '-i', path.join(SCREENSHOTS_DIR, 'frame-%03d.png'),
                 '-i', palettePath,
-                '-lavfi', 'fps=10,scale=1280:-1:flags=lanczos[x];[x][1:v]paletteuse',
+                '-filter_complex', '[0:v]fps=10,scale=1280:-1:flags=lanczos[x];[x][1:v]paletteuse',
                 '-loop', '0',
                 PREVIEW_GIF
             ].join(' ');
