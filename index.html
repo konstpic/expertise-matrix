@@ -1173,25 +1173,189 @@
         /* Responsive */
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                line-height: 1.2;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .status-banner {
+                padding: 15px 20px;
+                margin-bottom: 20px;
+            }
+            
+            .status-banner p {
+                font-size: 0.75rem;
+                margin: 3px 0;
             }
             
             .terminal-container {
-                padding: 20px;
-                height: 100px;
+                padding: 15px;
+                height: auto;
+                min-height: 80px;
+            }
+
+            .section {
+                padding: 20px 15px;
+                min-height: 100vh;
+                height: auto;
             }
 
             .section-content {
-                padding: 20px;
+                padding: 20px 15px;
                 padding-top: 80px; /* Extra padding to avoid overlap with section indicator */
             }
 
             .hero-section {
-                padding-top: 80px; /* Extra padding to avoid overlap with section indicator */
+                padding: 80px 15px 40px;
+                min-height: 100vh;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
             }
 
             h2 {
+                font-size: 1.3rem;
+                margin: 20px 0 15px 0;
+            }
+            
+            h3 {
+                font-size: 1.1rem;
+                margin: 15px 0 10px 0;
+            }
+            
+            h4 {
+                font-size: 0.95rem;
+            }
+            
+            p, .tech-tag, .legend-text {
+                font-size: 0.85rem;
+            }
+            
+            .projects-grid,
+            .philosophy-grid,
+            .achievements-grid,
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin: 20px 0;
+            }
+            
+            .project-card,
+            .philosophy-card,
+            .achievement-card,
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .legend {
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            .legend-item {
+                padding: 6px 12px;
+                gap: 8px;
+            }
+            
+            .legend-dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .legend-text {
+                font-size: 0.75rem;
+            }
+            
+            .contact-grid {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .contact-link {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .quote {
+                padding: 15px;
+                font-size: 0.9rem;
+                margin: 20px 0;
+            }
+            
+            .tech-tags {
+                gap: 6px;
+                margin-top: 10px;
+            }
+            
+            .tech-tag {
+                padding: 4px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .divider {
+                margin: 20px 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
                 font-size: 1.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .status-banner {
+                padding: 12px 15px;
+            }
+            
+            .status-banner p {
+                font-size: 0.7rem;
+            }
+            
+            h2 {
+                font-size: 1.1rem;
+            }
+            
+            h3 {
+                font-size: 0.95rem;
+            }
+            
+            p, .tech-tag, .legend-text {
+                font-size: 0.8rem;
+            }
+            
+            .section-content {
+                padding: 15px 10px;
+                padding-top: 70px; /* Extra padding for section indicator */
+            }
+            
+            .hero-section {
+                padding-top: 70px; /* Extra padding for section indicator */
+            }
+            
+            .project-card,
+            .philosophy-card,
+            .achievement-card {
+                padding: 12px;
+            }
+            
+            .legend {
+                gap: 8px;
+            }
+            
+            .legend-item {
+                padding: 5px 10px;
+            }
+            
+            .legend-text {
+                font-size: 0.7rem;
             }
         }
 
