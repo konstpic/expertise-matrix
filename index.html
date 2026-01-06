@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Tech Sphere</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: #00d9ff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(0, 217, 255, 0.8), 0 0 40px rgba(0, 217, 255, 0.6);
+            }
+        }
+
+        .sphere-container {
+            width: 600px;
+            height: 600px;
+            position: relative;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        .sphere {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotateY(0deg) rotateX(20deg);
+            }
+            to {
+                transform: rotateY(360deg) rotateX(20deg);
+            }
+        }
+
+        .tag {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-style: preserve-3d;
+            padding: 12px 24px;
+            background: rgba(0, 217, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 25px;
+            color: #00d9ff;
+            font-weight: 600;
+            font-size: 16px;
+            white-space: nowrap;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tag:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: rgba(0, 217, 255, 0.6);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+            transform: scale(1.2) !important;
+        }
+
+        /* Category colors */
+        .infrastructure {
+            border-color: rgba(255, 107, 107, 0.5);
+            color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .infrastructure:hover {
+            border-color: rgba(255, 107, 107, 0.8);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+        }
+
+        .cloud {
+            border-color: rgba(138, 43, 226, 0.5);
+            color: #8a2be2;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+        }
+
+        .cloud:hover {
+            border-color: rgba(138, 43, 226, 0.8);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.6);
+        }
+
+        .backend {
+            border-color: rgba(0, 255, 136, 0.5);
+            color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .backend:hover {
+            border-color: rgba(0, 255, 136, 0.8);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        }
+
+        .frontend {
+            border-color: rgba(255, 215, 0, 0.5);
+            color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .frontend:hover {
+            border-color: rgba(255, 215, 0, 0.8);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Particles background */
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 217, 255, 0.6);
+            border-radius: 50%;
+            animation: float 10s linear infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty));
+                opacity: 0;
+            }
+        }
+
+        .legend {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-text {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💎 EXPERTISE MATRIX</h1>
+        <div class="sphere-container">
+            <div class="sphere" id="sphere"></div>
+        </div>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #ff6b6b;"></div>
+                <span class="legend-text">Infrastructure</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #8a2be2;"></div>
+                <span class="legend-text">Cloud & DevOps</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #00ff88;"></div>
+                <span class="legend-text">Backend</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #ffd700;"></div>
+                <span class="legend-text">Frontend</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tags = [
+            // Infrastructure
+            { text: 'Docker', class: 'infrastructure' },
+            { text: 'Nginx', class: 'infrastructure' },
+            { text: 'Linux', class: 'infrastructure' },
+            { text: 'Load Balancing', class: 'infrastructure' },
+            { text: 'Proxy', class: 'infrastructure' },
+            { text: 'Network Engineering', class: 'infrastructure' },
+            
+            // Cloud & DevOps
+            { text: 'AWS', class: 'cloud' },
+            { text: 'Azure', class: 'cloud' },
+            { text: 'Kubernetes', class: 'cloud' },
+            { text: 'CI/CD', class: 'cloud' },
+            { text: 'Automation', class: 'cloud' },
+            { text: 'Monitoring', class: 'cloud' },
+            
+            // Backend
+            { text: 'Node.js', class: 'backend' },
+            { text: 'Python', class: 'backend' },
+            { text: 'Go', class: 'backend' },
+            { text: 'API Design', class: 'backend' },
+            { text: 'Microservices', class: 'backend' },
+            { text: 'Database', class: 'backend' },
+            
+            // Frontend
+            { text: 'TypeScript', class: 'frontend' },
+            { text: 'React', class: 'frontend' },
+            { text: 'Next.js', class: 'frontend' },
+            { text: 'Tailwind', class: 'frontend' },
+            { text: 'Performance', class: 'frontend' },
+            { text: 'UX Engineering', class: 'frontend' }
+        ];
+
+        const sphere = document.getElementById('sphere');
+        const radius = 250;
+
+        // Create tags with spherical distribution
+        tags.forEach((tag, index) => {
+            const phi = Math.acos(-1 + (2 * index) / tags.length);
+            const theta = Math.sqrt(tags.length * Math.PI) * phi;
+
+            const x = radius * Math.cos(theta) * Math.sin(phi);
+            const y = radius * Math.sin(theta) * Math.sin(phi);
+            const z = radius * Math.cos(phi);
+
+            const tagElement = document.createElement('div');
+            tagElement.className = `tag ${tag.class}`;
+            tagElement.textContent = tag.text;
+            tagElement.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${y}px, ${z}px)`;
+
+            sphere.appendChild(tagElement);
+        });
+
+        // Create particles
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+            particle.style.setProperty('--ty', (Math.random() - 0.5) * 200 + 'px');
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            document.body.appendChild(particle);
+        }
+
+        // Mouse interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        let currentRotationX = 20;
+        let currentRotationY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        function animate() {
+            currentRotationX += (mouseY * 10 - currentRotationX) * 0.05;
+            currentRotationY += (mouseX * 10 - currentRotationY) * 0.05;
+            
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
