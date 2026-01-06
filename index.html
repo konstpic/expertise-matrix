@@ -11,11 +11,51 @@
             box-sizing: border-box;
         }
 
+        /* Remove default cursor from all clickable elements */
+        a, button, .section-number, .project-link, .contact-link, .section-indicator, .section-wheel {
+            cursor: none !important;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            scroll-padding-top: 0;
+        }
+
         body {
-            background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #fff;
+            background: #000000;
+            font-family: 'Courier New', Courier, 'Consolas', 'Monaco', monospace;
+            color: #00ff00;
             overflow-x: hidden;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+            cursor: none; /* Hide default cursor */
+        }
+
+        /* Custom hacker green cursor - pointer style */
+        .custom-cursor {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(0, 0);
+            filter: drop-shadow(0 0 3px #00ff00) drop-shadow(0 0 6px #00ff00);
+            transition: transform 0.1s ease-out;
+            overflow: visible;
+        }
+
+        .custom-cursor svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .custom-cursor.hover {
+            transform: translate(0, 0) scale(1.2);
+        }
+
+        .custom-cursor.click {
+            transform: translate(0, 0) scale(0.9);
         }
 
         /* Hero Section */
@@ -30,68 +70,80 @@
         }
 
         .hero-title {
-            color: #00d9ff;
+            color: #00ff00;
             font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
-            animation: glow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+            animation: terminal-glow 1.5s ease-in-out infinite alternate;
             text-align: center;
+            font-weight: bold;
         }
 
         .hero-subtitle {
-            color: #fff;
+            color: #00ff41;
             font-size: 1.2rem;
             margin-bottom: 40px;
             opacity: 0.9;
             text-align: center;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
         }
 
         .status-banner {
-            background: rgba(0, 217, 255, 0.1);
+            background: rgba(0, 255, 0, 0.05);
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(0, 217, 255, 0.3);
-            border-radius: 15px;
+            border: 2px solid #00ff00;
+            border-radius: 0;
             padding: 20px 40px;
             margin-bottom: 40px;
             text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.1);
         }
 
         .status-banner p {
             margin: 5px 0;
-            color: #00d9ff;
+            color: #00ff00;
             font-size: 0.95rem;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
         h1 {
-            color: #00d9ff;
+            color: #00ff00;
             font-size: 2.5rem;
             margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
-            animation: glow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            animation: terminal-glow 1.5s ease-in-out infinite alternate;
+            font-weight: bold;
         }
 
         h2 {
-            color: #00d9ff;
+            color: #00ff00;
             font-size: 2rem;
             margin: 40px 0 20px 0;
             text-align: center;
-            text-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+            font-weight: bold;
         }
 
         h3 {
-            color: #00d9ff;
+            color: #00ff41;
             font-size: 1.5rem;
             margin: 30px 0 15px 0;
             text-align: center;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
         }
 
-        @keyframes glow {
+        @keyframes terminal-glow {
             from {
-                text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
             }
             to {
-                text-shadow: 0 0 30px rgba(0, 217, 255, 0.8), 0 0 40px rgba(0, 217, 255, 0.6);
+                text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
             }
+        }
+
+        @keyframes cursor-blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
 
         .sphere-container {
@@ -99,95 +151,325 @@
             height: 600px;
             position: relative;
             margin: 0 auto;
-            perspective: 1000px;
         }
 
         .sphere {
             width: 100%;
             height: 100%;
             position: relative;
-            transform-style: preserve-3d;
-            animation: rotate 30s linear infinite;
-        }
-
-        @keyframes rotate {
-            from {
-                transform: rotateY(0deg) rotateX(20deg);
-            }
-            to {
-                transform: rotateY(360deg) rotateX(20deg);
-            }
         }
 
         .tag {
             position: absolute;
-            left: 50%;
-            top: 50%;
-            transform-style: preserve-3d;
-            padding: 12px 24px;
-            background: rgba(0, 217, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(0, 217, 255, 0.3);
-            border-radius: 25px;
-            color: #00d9ff;
-            font-weight: 600;
-            font-size: 16px;
-            white-space: nowrap;
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
-            transition: all 0.3s ease;
             cursor: pointer;
         }
 
-        .tag:hover {
-            background: rgba(0, 217, 255, 0.2);
-            border-color: rgba(0, 217, 255, 0.6);
-            box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
-            transform: scale(1.2) !important;
+        /* Tag as dot (collapsed state) */
+        .tag.dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            padding: 0;
+            background: rgba(0, 255, 0, 0.8);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.4);
+            font-size: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            transform: translate(-50%, -50%);
+            /* Remove transition from class - we control it via inline styles */
         }
 
-        /* Category colors */
-        .infrastructure {
-            border-color: rgba(255, 107, 107, 0.5);
-            color: #ff6b6b;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        /* Tag as full text (expanded state in center) */
+        .tag.expanded {
+            left: 50% !important;
+            top: 50% !important;
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid #00ff00;
+            border-radius: 0;
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 16px;
+            white-space: nowrap;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            width: auto;
+            height: auto;
+            z-index: 100;
+            transform: translate(-50%, -50%) scale(1.2);
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 0 5px #00ff00;
         }
 
-        .infrastructure:hover {
-            border-color: rgba(255, 107, 107, 0.8);
-            box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+        /* Category colors for dots - all green terminal variants */
+        .infrastructure.dot {
+            background: rgba(0, 255, 0, 0.8);
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.4);
         }
 
-        .cloud {
-            border-color: rgba(138, 43, 226, 0.5);
-            color: #8a2be2;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+        .infrastructure.expanded {
+            border-color: #00ff00;
+            color: #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.1);
         }
 
-        .cloud:hover {
-            border-color: rgba(138, 43, 226, 0.8);
-            box-shadow: 0 0 30px rgba(138, 43, 226, 0.6);
+        .cloud.dot {
+            background: rgba(0, 255, 65, 0.8);
+            border-color: #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.8), 0 0 20px rgba(0, 255, 65, 0.4);
         }
 
-        .backend {
-            border-color: rgba(0, 255, 136, 0.5);
-            color: #00ff88;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        .cloud.expanded {
+            border-color: #00ff41;
+            color: #00ff41;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.8), inset 0 0 20px rgba(0, 255, 65, 0.1);
         }
 
-        .backend:hover {
-            border-color: rgba(0, 255, 136, 0.8);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        .backend.dot {
+            background: rgba(57, 255, 20, 0.8);
+            border-color: #39ff14;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.8), 0 0 20px rgba(57, 255, 20, 0.4);
         }
 
-        .frontend {
-            border-color: rgba(255, 215, 0, 0.5);
-            color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        .backend.expanded {
+            border-color: #39ff14;
+            color: #39ff14;
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.8), inset 0 0 20px rgba(57, 255, 20, 0.1);
         }
 
-        .frontend:hover {
-            border-color: rgba(255, 215, 0, 0.8);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        .frontend.dot {
+            background: rgba(0, 255, 127, 0.8);
+            border-color: #00ff7f;
+            box-shadow: 0 0 10px rgba(0, 255, 127, 0.8), 0 0 20px rgba(0, 255, 127, 0.4);
+        }
+
+        .frontend.expanded {
+            border-color: #00ff7f;
+            color: #00ff7f;
+            box-shadow: 0 0 30px rgba(0, 255, 127, 0.8), inset 0 0 20px rgba(0, 255, 127, 0.1);
+        }
+
+        /* Terminal Container */
+        .terminal-container {
+            height: 100px;
+        }
+
+        /* Scroll Animation - Terminal Style */
+        .section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            overflow-y: auto;
+        }
+
+        .section.terminal-reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-content {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 255, 0, 0.15) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .section.terminal-reveal .section-content::before {
+            animation: terminal-scan 1.2s ease-out forwards;
+        }
+
+        @keyframes terminal-scan {
+            0% {
+                width: 0;
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                width: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Terminal typing effect */
+        .typing-element {
+            position: relative;
+        }
+
+        .typing-element::after {
+            content: '_';
+            color: #00ff00;
+            animation: cursor-blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        .typing-element.typing-complete::after {
+            display: none;
+        }
+
+        .typing-text {
+            opacity: 0;
+        }
+
+        .typing-text.typing-active {
+            opacity: 1;
+        }
+
+        /* Section Indicator - iOS style wheel */
+        .section-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: 'Courier New', Courier, 'Consolas', 'Monaco', monospace;
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            transition: all 0.3s ease-out;
+        }
+
+        .section-indicator:hover {
+            z-index: 1001;
+        }
+
+        .section-indicator-label {
+            font-size: 10px;
+            color: #00ff41;
+            text-align: center;
+            margin-bottom: 5px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-wheel {
+            position: relative;
+            width: 180px;
+            height: 80px;
+            overflow: hidden;
+            border: 2px solid #00ff00;
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            transition: height 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+
+        .section-indicator:hover .section-wheel {
+            height: auto;
+            max-height: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), inset 0 0 30px rgba(0, 255, 0, 0.2);
+        }
+
+        .section-indicator:hover .section-wheel-mask {
+            display: none;
+        }
+
+        /* Scrollbar styling for expanded wheel */
+        .section-wheel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .section-wheel::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.8);
+            border-left: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .section-wheel::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.8), inset 0 0 3px rgba(0, 255, 0, 0.5);
+        }
+
+        .section-wheel::-webkit-scrollbar-thumb:hover {
+            background: #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 1), inset 0 0 5px rgba(0, 255, 0, 0.7);
+        }
+
+        .section-wheel-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.9) 0%,
+                transparent 20%,
+                transparent 80%,
+                rgba(0, 0, 0, 0.9) 100%
+            );
+            z-index: 2;
+        }
+
+        .section-wheel-numbers {
+            position: relative;
+            width: 100%;
+            transition: transform 0.2s ease-out;
+        }
+
+        /* When wheel is expanded, don't transform numbers */
+        .section-indicator:hover .section-wheel-numbers {
+            transform: none !important;
+            position: relative;
+        }
+
+        .section-number {
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            font-size: 9px;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 8px;
+            letter-spacing: 0.5px;
+            cursor: none;
+            transition: background 0.2s ease-out, opacity 0.2s ease-out;
+            user-select: none;
+        }
+
+        .section-number:hover {
+            background: rgba(0, 255, 0, 0.1);
+            opacity: 1 !important;
+            text-shadow: 0 0 15px rgba(0, 255, 0, 1);
+        }
+
+        .section-number.active {
+            color: #00ff00;
+            text-shadow: 0 0 15px rgba(0, 255, 0, 1), 0 0 25px rgba(0, 255, 0, 0.6);
+            font-size: 11px;
+            letter-spacing: 0.8px;
+        }
+
+        .section-number.inactive {
+            opacity: 0.3;
+            font-size: 7px;
+            letter-spacing: 0.3px;
         }
 
         /* Particles background */
@@ -195,11 +477,12 @@
             position: fixed;
             width: 2px;
             height: 2px;
-            background: rgba(0, 217, 255, 0.6);
+            background: rgba(0, 255, 0, 0.6);
             border-radius: 50%;
             animation: float 10s linear infinite;
             pointer-events: none;
             z-index: 1;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.8);
         }
 
         @keyframes float {
@@ -232,9 +515,11 @@
             align-items: center;
             gap: 10px;
             padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 0;
             backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
 
         .legend-dot {
@@ -244,9 +529,10 @@
         }
 
         .legend-text {
-            color: #fff;
+            color: #00ff00;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
         /* Section Styles */
@@ -258,13 +544,20 @@
             z-index: 10;
         }
 
+        /* Override section height for hero section */
+        .hero-section {
+            height: auto;
+            min-height: 100vh;
+            scroll-snap-align: start;
+        }
+
         .section-content {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
+            border-radius: 0;
             padding: 40px;
-            border: 1px solid rgba(0, 217, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.05);
         }
 
         /* Stats Section */
@@ -276,18 +569,19 @@
         }
 
         .stat-card {
-            background: rgba(0, 217, 255, 0.05);
-            border: 1px solid rgba(0, 217, 255, 0.2);
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 0;
             padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
+            color: #00ff00;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
-            border-color: rgba(0, 217, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
         }
 
         .stat-card img {
@@ -304,27 +598,28 @@
         }
 
         .project-card {
-            background: rgba(0, 217, 255, 0.05);
-            border: 2px solid rgba(0, 217, 255, 0.2);
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 0;
             padding: 25px;
             transition: all 0.3s ease;
         }
 
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
-            border-color: rgba(0, 217, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
         }
 
         .project-card h3 {
-            color: #00d9ff;
+            color: #00ff00;
             margin-bottom: 10px;
             font-size: 1.3rem;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
         .project-card p {
-            color: rgba(255, 255, 255, 0.8);
+            color: #00ff41;
             margin-bottom: 15px;
             line-height: 1.6;
         }
@@ -332,18 +627,20 @@
         .project-link {
             display: inline-block;
             padding: 10px 20px;
-            background: rgba(0, 217, 255, 0.2);
-            border: 1px solid rgba(0, 217, 255, 0.4);
-            border-radius: 8px;
-            color: #00d9ff;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 0;
+            cursor: none;
+            color: #00ff00;
             text-decoration: none;
             transition: all 0.3s ease;
-            font-weight: 600;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
         .project-link:hover {
-            background: rgba(0, 217, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
         }
 
         .tech-tags {
@@ -355,11 +652,12 @@
 
         .tech-tag {
             padding: 5px 12px;
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid rgba(0, 217, 255, 0.3);
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 0;
             font-size: 0.85rem;
-            color: #00d9ff;
+            color: #00ff00;
+            text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
         }
 
         /* Achievements Grid */
@@ -371,17 +669,18 @@
         }
 
         .achievement-card {
-            background: rgba(0, 217, 255, 0.05);
-            border: 1px solid rgba(0, 217, 255, 0.2);
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 0;
             padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
+            color: #00ff00;
         }
 
         .achievement-card:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), inset 0 0 20px rgba(0, 255, 0, 0.1);
         }
 
         .achievement-card img {
@@ -399,9 +698,9 @@
         }
 
         .philosophy-card {
-            background: rgba(0, 217, 255, 0.05);
-            border: 2px solid rgba(0, 217, 255, 0.2);
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 0;
             padding: 30px;
             text-align: center;
             transition: all 0.3s ease;
@@ -409,17 +708,18 @@
 
         .philosophy-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
-            border-color: rgba(0, 217, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
         }
 
         .philosophy-card h3 {
-            color: #00d9ff;
+            color: #00ff00;
             margin-bottom: 15px;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
         .philosophy-card p {
-            color: rgba(255, 255, 255, 0.8);
+            color: #00ff41;
             font-style: italic;
             line-height: 1.6;
         }
@@ -427,12 +727,13 @@
         .quote {
             margin: 30px 0;
             padding: 20px;
-            background: rgba(0, 217, 255, 0.05);
-            border-left: 4px solid #00d9ff;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.9);
+            border-left: 4px solid #00ff00;
+            border-radius: 0;
             font-style: italic;
-            color: rgba(255, 255, 255, 0.9);
+            color: #00ff41;
             font-size: 1.1rem;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
         }
 
         /* Contact Section */
@@ -446,19 +747,21 @@
 
         .contact-link {
             padding: 15px 30px;
-            background: rgba(0, 217, 255, 0.1);
-            border: 2px solid rgba(0, 217, 255, 0.3);
-            border-radius: 10px;
-            color: #00d9ff;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 0;
+            color: #00ff00;
+            cursor: none;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: bold;
             transition: all 0.3s ease;
             display: inline-block;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
         .contact-link:hover {
-            background: rgba(0, 217, 255, 0.2);
-            box-shadow: 0 0 25px rgba(0, 217, 255, 0.5);
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
             transform: translateY(-3px);
         }
 
@@ -466,15 +769,17 @@
         .footer {
             text-align: center;
             padding: 40px 20px;
-            color: rgba(255, 255, 255, 0.7);
-            border-top: 1px solid rgba(0, 217, 255, 0.2);
+            color: #00ff41;
+            border-top: 2px solid #00ff00;
             margin-top: 60px;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
         }
 
         .divider {
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.5), transparent);
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.5), transparent);
             margin: 40px 0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
 
         /* Responsive */
@@ -483,10 +788,9 @@
                 font-size: 2rem;
             }
             
-            .sphere-container {
-                width: 100%;
-                max-width: 400px;
-                height: 400px;
+            .terminal-container {
+                padding: 20px;
+                height: 100px;
             }
 
             .section-content {
@@ -508,103 +812,126 @@
         .typing-container img {
             max-width: 100%;
         }
+
+        /* Terminal cursor effect */
+        .terminal-cursor::after {
+            content: '_';
+            animation: cursor-blink 1s infinite;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Terminal scanline effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 255, 0, 0.03) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
     </style>
 </head>
 <body>
+    <!-- Section Indicator -->
+    <div class="section-indicator">
+        <div class="section-indicator-label">Section</div>
+        <div class="section-wheel">
+            <div class="section-wheel-mask"></div>
+            <div class="section-wheel-numbers" id="section-wheel-numbers">
+                <div class="section-number active" data-index="0">HOME</div>
+                <div class="section-number inactive" data-index="1">TECH ARSENAL</div>
+                <div class="section-number inactive" data-index="2">METRICS</div>
+                <div class="section-number inactive" data-index="3">PROJECTS</div>
+                <div class="section-number inactive" data-index="4">FOCUS</div>
+                <div class="section-number inactive" data-index="5">ACHIEVEMENTS</div>
+                <div class="section-number inactive" data-index="6">CONTRIBUTIONS</div>
+                <div class="section-number inactive" data-index="7">PHILOSOPHY</div>
+                <div class="section-number inactive" data-index="8">CONTACTS</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section with 3D Sphere -->
     <section class="hero-section">
         <h1 class="hero-title">KONSTANTIN PICHUGIN</h1>
-        <p class="hero-subtitle">Full-Stack Developer | Infrastructure Architect</p>
+        <p class="hero-subtitle">Full-Stack Beginner Developer | DevOps Engineer</p>
         
         <div class="status-banner">
-            <p>🌊 DIVING DEEP INTO THE CODE OCEAN</p>
+            <p>DIVING DEEP INTO THE CODE OCEAN</p>
             <p>+ Status: Building the future, one commit at a time</p>
-            <p>! Location: Tula, Russia 🇷🇺 | Remote: 🌍 Worldwide</p>
-            <p># Current Vibe: ⚡ High Performance | 🎯 Precision Engineering</p>
+            <p>! Location: Tula, Russia | Remote: Worldwide</p>
+            <p># Current Vibe: High Performance | Precision Engineering</p>
         </div>
 
-        <h1>💎 EXPERTISE MATRIX</h1>
-        <div class="sphere-container">
-            <div class="sphere" id="sphere"></div>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <span class="terminal-prompt">$</span>
+                <span class="terminal-user">root@expertise</span>
+                <span class="terminal-path">~/tech-stack</span>
+            </div>
+            <div class="terminal-command" id="terminal-command">
+                <span id="command-text"></span>
+                <span class="terminal-cursor"></span>
+            </div>
+            <div class="terminal-output" id="terminal-output"></div>
         </div>
         <div class="legend">
             <div class="legend-item">
-                <div class="legend-dot" style="background: #ff6b6b;"></div>
+                <div class="legend-dot" style="background: #00ff00;"></div>
                 <span class="legend-text">Infrastructure</span>
             </div>
             <div class="legend-item">
-                <div class="legend-dot" style="background: #8a2be2;"></div>
+                <div class="legend-dot" style="background: #00ff41;"></div>
                 <span class="legend-text">Cloud & DevOps</span>
             </div>
             <div class="legend-item">
-                <div class="legend-dot" style="background: #00ff88;"></div>
+                <div class="legend-dot" style="background: #39ff14;"></div>
                 <span class="legend-text">Backend</span>
             </div>
             <div class="legend-item">
-                <div class="legend-dot" style="background: #ffd700;"></div>
+                <div class="legend-dot" style="background: #00ff7f;"></div>
                 <span class="legend-text">Frontend</span>
             </div>
         </div>
     </section>
 
-    <!-- GitHub Stats Section -->
-    <section class="section">
-        <div class="section-content">
-            <h2>✨ REALITY DISTORTION FIELD ✨</h2>
-            <div class="stats-container" style="display:flex; flex-wrap:wrap; gap:32px; justify-content:center; align-items:stretch;">
-                <div class="stat-card" style="background:rgba(20,40,75,0.7); border-radius:16px; padding:18px 20px;">
-                    <a href="https://github.com/konstpic" target="_blank" rel="noopener">
-                        <img 
-                            src="https://raw.githubusercontent.com/konstpic/expertise-matrix/main/demo/github-stats-fallback.png" 
-                            alt="GitHub Stats"
-                            style="display:block;max-width:340px;min-width:220px;width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,217,255,0.13);"
-                            onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/konstpic/expertise-matrix/main/demo/github-stats-fallback.png';"
-                        />
-                    </a>
-                    <p style="color: rgba(255,255,255,0.7); font-size:0.9em; margin-top:8px; text-align:center;">
-                        If the card above is not loading, <a style="color:#00d9ff;" href='https://github.com/konstpic' target='_blank' rel='noopener'>check my GitHub</a>.
-                    </p>
-                </div>
-                <div class="stat-card" style="background:rgba(20,40,75,0.7); border-radius:16px; padding:18px 20px;">
-                    <a href="https://github.com/konstpic" target="_blank" rel="noopener">
-                        <img 
-                            src="https://raw.githubusercontent.com/konstpic/expertise-matrix/main/demo/github-streak-fallback.png" 
-                            alt="GitHub Streak"
-                            style="display:block;max-width:340px;min-width:220px;width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(0,217,255,0.13);"
-                            onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/konstpic/expertise-matrix/main/demo/github-streak-fallback.png';"
-                        />
-                    </a>
-                    <p style="color: rgba(255,255,255,0.7); font-size:0.9em; margin-top:8px; text-align:center;">
-                        If the card above is not loading, <a style="color:#00d9ff;" href='https://github.com/konstpic' target='_blank' rel='noopener'>see my GitHub profile</a>.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div class="divider"></div>
 
     <!-- Technology Arsenal Section -->
     <section class="section">
         <div class="section-content">
-            <h2>🔮 TECHNOLOGY ARSENAL</h2>
-            <h3>⚡ CORE STACK</h3>
+            <h2>TECHNOLOGY ARSENAL</h2>
+                <h3>CORE STACK</h3>
             
             <div style="margin: 30px 0;">
-                <h4 style="color: #00d9ff; margin-bottom: 15px;">Backend Engineering</h4>
+                <h4 style="color: #00ff00; margin-bottom: 15px; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Backend Engineering</h4>
                 <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
                     <span class="tech-tag">Node.js</span>
                     <span class="tech-tag">Python</span>
                     <span class="tech-tag">Go</span>
                     <span class="tech-tag">Rust</span>
                 </div>
-                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+                <p style="text-align: center; color: #00ff41; margin-bottom: 20px;">
                     <strong>Python</strong> - Advanced | <strong>Go</strong> - Proficient
                 </p>
-            </div>
+    </div>
 
             <div style="margin: 30px 0;">
-                <h4 style="color: #00d9ff; margin-bottom: 15px;">Infrastructure & DevOps</h4>
+                    <h4 style="color: #00ff00; margin-bottom: 15px; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Infrastructure & DevOps</h4>
                 <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
                     <span class="tech-tag">Docker</span>
                     <span class="tech-tag">Kubernetes</span>
@@ -613,13 +940,13 @@
                     <span class="tech-tag">AWS</span>
                     <span class="tech-tag">Azure</span>
                 </div>
-                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 20px;">
-                    <strong>Docker</strong> - Master | <strong>Nginx</strong> - Expert | <strong>Linux</strong> - Wizard
+                <p style="text-align: center; color: #00ff41; margin-bottom: 20px;">
+                    <strong>Docker</strong> - Master | <strong>Nginx</strong> - Middle | <strong>Linux</strong> - Wizard
                 </p>
             </div>
 
             <div style="margin: 30px 0;">
-                <h4 style="color: #00d9ff; margin-bottom: 15px;">Frontend Craft</h4>
+                    <h4 style="color: #00ff00; margin-bottom: 15px; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Frontend Craft</h4>
                 <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
                     <span class="tech-tag">TypeScript</span>
                     <span class="tech-tag">React</span>
@@ -627,39 +954,34 @@
                     <span class="tech-tag">Tailwind</span>
                     <span class="tech-tag">Vite</span>
                 </div>
-                <p style="text-align: center; color: rgba(255,255,255,0.8);">
+                <p style="text-align: center; color: #00ff41;">
                     <strong>TypeScript</strong> - Advanced | <strong>React</strong> - Proficient
                 </p>
             </div>
         </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- Performance Metrics Section -->
     <section class="section">
         <div class="section-content">
-            <h2>📊 PERFORMANCE METRICS</h2>
+            <h2>PERFORMANCE METRICS</h2>
             <div class="stats-container">
                 <div class="stat-card">
-                    <img src="https://github-readme-activity-graph.vercel.app/graph?username=konstpic&custom_title=Contribution%20Flow&bg_color=0d1117&color=00d9ff&line=00d9ff&point=ffffff&area=true&hide_border=true&area_color=00d9ff" alt="Contribution Graph"/>
-                </div>
-                <div class="stat-card">
-                    <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=konstpic&layout=donut&theme=transparent&hide_border=true&bg_color=00000000&title_color=00d9ff&text_color=ffffff&langs_count=8" alt="Top Languages"/>
+                    <img src="https://github-readme-activity-graph.vercel.app/graph?username=konstpic&custom_title=Contribution%20Flow&bg_color=000000&color=00ff00&line=00ff00&point=00ff41&area=true&hide_border=true&area_color=00ff41" alt="Contribution Graph"/>
                 </div>
             </div>
         </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- Signature Projects Section -->
     <section class="section">
         <div class="section-content">
-            <h2>🎯 SIGNATURE PROJECTS</h2>
+            <h2>SIGNATURE PROJECTS</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <h3>🔥 3x-ui MySQL Fork</h3>
+                    <h3>3x-ui MySQL Fork</h3>
                     <p>Advanced proxy management system with MySQL backend integration</p>
                     <a href="https://github.com/konstpic/3x-ui-MySQL-fork" class="project-link" target="_blank">VIEW REPO</a>
                     <div class="tech-tags">
@@ -670,7 +992,7 @@
                     </div>
                 </div>
                 <div class="project-card">
-                    <h3>⚖️ Nginx Balancer</h3>
+                    <h3>Nginx Balancer</h3>
                     <p>High-performance load balancing solution for distributed systems</p>
                     <a href="https://github.com/konstpic/nginx-balancer" class="project-link" target="_blank">VIEW REPO</a>
                     <div class="tech-tags">
@@ -684,12 +1006,11 @@
         </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- Current Focus Areas Section -->
     <section class="section">
         <div class="section-content">
-            <h2>🧠 CURRENT FOCUS AREAS</h2>
+            <h2>CURRENT FOCUS AREAS</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
                 <div class="philosophy-card">
                     <h3 style="color: #ff6b6b;">Infrastructure</h3>
@@ -711,37 +1032,36 @@
         </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- Achievements Section -->
     <section class="section">
         <div class="section-content">
-            <h2>🏆 ACHIEVEMENTS UNLOCKED</h2>
+            <h2>ACHIEVEMENTS UNLOCKED</h2>
             <div class="achievements-grid">
                 <div class="achievement-card">
                     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/github/github-original.svg" alt="commits"/>
-                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Commits</h4>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Building Daily</p>
+                    <h4 style="color: #00ff00; margin: 10px 0 5px 0; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Commits</h4>
+                    <p style="color: #00ff41; font-size: 0.9rem;">Building Daily</p>
                 </div>
                 <div class="achievement-card">
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="docker"/>
-                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Containerization</h4>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Master</p>
+                    <h4 style="color: #00ff00; margin: 10px 0 5px 0; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Containerization</h4>
+                    <p style="color: #00ff41; font-size: 0.9rem;">Master</p>
                 </div>
                 <div class="achievement-card">
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="linux"/>
-                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Linux Guru</h4>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Expert Level</p>
+                    <h4 style="color: #00ff00; margin: 10px 0 5px 0; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Linux Guru</h4>
+                    <p style="color: #00ff41; font-size: 0.9rem;">Middle Level</p>
                 </div>
                 <div class="achievement-card">
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="nginx"/>
-                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Load Balancing</h4>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Optimized</p>
+                    <h4 style="color: #00ff00; margin: 10px 0 5px 0; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Load Balancing</h4>
+                    <p style="color: #00ff41; font-size: 0.9rem;">Middle Level</p>
                 </div>
                 <div class="achievement-card">
                     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="nodejs"/>
-                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Backend Dev</h4>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Production Ready</p>
+                    <h4 style="color: #00ff00; margin: 10px 0 5px 0; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);">Backend Dev</h4>
+                    <p style="color: #00ff41; font-size: 0.9rem;">Middle Level</p>
                 </div>
             </div>
             <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 30px;">
@@ -753,35 +1073,33 @@
         </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- Contribution Flow Section -->
     <section class="section">
         <div class="section-content">
-            <h2>🐍 CONTRIBUTION FLOW</h2>
+            <h2>CONTRIBUTION FLOW</h2>
             <div style="margin: 30px 0;">
                 <img src="https://raw.githubusercontent.com/konstpic/konstpic/output/github-contribution-grid-snake-dark.svg" alt="Contribution Snake" style="width: 100%; max-width: 800px; margin: 0 auto; display: block;"/>
             </div>
         </div>
     </section>
 
-    <div class="divider"></div>
 
     <!-- Engineering Philosophy Section -->
     <section class="section">
         <div class="section-content">
-            <h2>💭 ENGINEERING PHILOSOPHY</h2>
+            <h2>ENGINEERING PHILOSOPHY</h2>
             <div class="philosophy-grid">
                 <div class="philosophy-card">
-                    <h3>🎯 PRECISION</h3>
+                    <h3>PRECISION</h3>
                     <p>Every line of code<br/>serves a purpose</p>
                 </div>
                 <div class="philosophy-card">
-                    <h3>⚡ PERFORMANCE</h3>
+                    <h3>PERFORMANCE</h3>
                     <p>Optimize for speed<br/>and efficiency</p>
                 </div>
                 <div class="philosophy-card">
-                    <h3>🔒 SECURITY</h3>
+                    <h3>SECURITY</h3>
                     <p>Build systems<br/>that last</p>
                 </div>
             </div>
@@ -791,94 +1109,112 @@
         </div>
     </section>
 
-    <div class="divider"></div>
 
-    <!-- Typing Animation Section -->
-    <section class="section">
-        <div class="section-content">
-            <div class="typing-container">
-                <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=00D9FF&center=true&vCenter=true&multiline=true&repeat=true&width=800&height=100&lines=Building+scalable+infrastructure+%7C+Crafting+elegant+solutions;Always+learning%2C+always+growing+%7C+Open+to+collaborations;Let's+build+something+amazing+together+%F0%9F%9A%80" alt="Typing SVG" />
-            </div>
-        </div>
-    </section>
-
-    <div class="divider"></div>
 
     <!-- Contact Section -->
     <section class="section">
         <div class="section-content">
-            <h2>📡 TRANSMISSION CHANNELS</h2>
+            <h2>TRANSMISSION CHANNELS</h2>
             <div class="contact-grid">
                 <a href="https://github.com/konstpic" class="contact-link" target="_blank">GitHub</a>
                 <a href="https://t.me/konstpic" class="contact-link" target="_blank">Telegram</a>
             </div>
-            <p style="text-align: center; margin-top: 30px; color: rgba(255,255,255,0.8);">
-                <strong>🤝 Open for Collaboration</strong><br/>
-                <span style="color: rgba(255,255,255,0.6);">Interesting Projects • Infrastructure Challenges • Open Source Contributions</span>
+            <p style="text-align: center; margin-top: 30px; color: #00ff41;">
+                <strong>Open for Collaboration</strong><br/>
+                <span style="color: #00ff41; opacity: 0.8;">Interesting Projects • Infrastructure Challenges • Open Source Contributions</span>
             </p>
+            <div style="text-align: center; margin-top: 60px; padding-top: 40px; border-top: 2px solid #00ff00;">
+                <p style="font-size: 1.2rem; margin-bottom: 10px; color: #00ff00;">"In code we trust, in automation we thrive"</p>
+                <p style="color: #00ff41; opacity: 0.8;">Made with passion and dedication by Konstantin Pichugin</p>
+            </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p style="font-size: 1.2rem; margin-bottom: 10px;">⚡ "In code we trust, in automation we thrive" ⚡</p>
-        <p style="color: rgba(255,255,255,0.6);">Made with 💙 and ☕ by Konstantin Pichugin</p>
-    </footer>
-
     <script>
-        const tags = [
+        const technologies = [
             // Infrastructure
-            { text: 'Docker', class: 'infrastructure' },
-            { text: 'Nginx', class: 'infrastructure' },
-            { text: 'Linux', class: 'infrastructure' },
-            { text: 'Load Balancing', class: 'infrastructure' },
-            { text: 'Proxy', class: 'infrastructure' },
-            { text: 'Network Engineering', class: 'infrastructure' },
+            { text: 'Docker', class: 'infrastructure', command: 'docker ps' },
+            { text: 'Nginx', class: 'infrastructure', command: 'nginx -t' },
+            { text: 'Linux', class: 'infrastructure', command: 'uname -a' },
+            { text: 'Load Balancing', class: 'infrastructure', command: 'haproxy -c' },
+            { text: 'Proxy', class: 'infrastructure', command: 'squid -k check' },
+            { text: 'Network Engineering', class: 'infrastructure', command: 'ip addr show' },
             
             // Cloud & DevOps
-            { text: 'AWS', class: 'cloud' },
-            { text: 'Azure', class: 'cloud' },
-            { text: 'Kubernetes', class: 'cloud' },
-            { text: 'CI/CD', class: 'cloud' },
-            { text: 'Automation', class: 'cloud' },
-            { text: 'Monitoring', class: 'cloud' },
+            { text: 'AWS', class: 'cloud', command: 'aws s3 ls' },
+            { text: 'Azure', class: 'cloud', command: 'az account show' },
+            { text: 'Kubernetes', class: 'cloud', command: 'kubectl get nodes' },
+            { text: 'CI/CD', class: 'cloud', command: 'gitlab-ci validate' },
+            { text: 'Automation', class: 'cloud', command: 'ansible-playbook --check' },
+            { text: 'Monitoring', class: 'cloud', command: 'prometheus --version' },
             
             // Backend
-            { text: 'Node.js', class: 'backend' },
-            { text: 'Python', class: 'backend' },
-            { text: 'Go', class: 'backend' },
-            { text: 'API Design', class: 'backend' },
-            { text: 'Microservices', class: 'backend' },
-            { text: 'Database', class: 'backend' },
+            { text: 'Node.js', class: 'backend', command: 'node --version' },
+            { text: 'Python', class: 'backend', command: 'python --version' },
+            { text: 'Go', class: 'backend', command: 'go version' },
+            { text: 'API Design', class: 'backend', command: 'curl -I api.example.com' },
+            { text: 'Microservices', class: 'backend', command: 'docker-compose ps' },
+            { text: 'Database', class: 'backend', command: 'psql --version' },
             
             // Frontend
-            { text: 'TypeScript', class: 'frontend' },
-            { text: 'React', class: 'frontend' },
-            { text: 'Next.js', class: 'frontend' },
-            { text: 'Tailwind', class: 'frontend' },
-            { text: 'Performance', class: 'frontend' },
-            { text: 'UX Engineering', class: 'frontend' }
+            { text: 'TypeScript', class: 'frontend', command: 'tsc --version' },
+            { text: 'React', class: 'frontend', command: 'npm list react' },
+            { text: 'Next.js', class: 'frontend', command: 'next --version' },
+            { text: 'Tailwind', class: 'frontend', command: 'npx tailwindcss --version' },
+            { text: 'Performance', class: 'frontend', command: 'lighthouse --version' },
+            { text: 'UX Engineering', class: 'frontend', command: 'npm run build' }
         ];
 
-        const sphere = document.getElementById('sphere');
-        const radius = 250;
+        const commandText = document.getElementById('command-text');
+        const terminalOutput = document.getElementById('terminal-output');
+        let currentTechIndex = 0;
+        let isTyping = false;
 
-        // Create tags with spherical distribution
-        tags.forEach((tag, index) => {
-            const phi = Math.acos(-1 + (2 * index) / tags.length);
-            const theta = Math.sqrt(tags.length * Math.PI) * phi;
+        // Typewriter effect
+        function typeText(element, text, speed = 50, callback) {
+            if (isTyping) return;
+            isTyping = true;
+            element.textContent = '';
+            let index = 0;
+            
+            function type() {
+                if (index < text.length) {
+                    element.textContent += text[index];
+                    index++;
+                    setTimeout(type, speed);
+                } else {
+                    isTyping = false;
+                    if (callback) callback();
+                }
+            }
+            
+            type();
+        }
 
-            const x = radius * Math.cos(theta) * Math.sin(phi);
-            const y = radius * Math.sin(theta) * Math.sin(phi);
-            const z = radius * Math.cos(phi);
-
-            const tagElement = document.createElement('div');
-            tagElement.className = `tag ${tag.class}`;
-            tagElement.textContent = tag.text;
-            tagElement.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${y}px, ${z}px)`;
-
-            sphere.appendChild(tagElement);
-        });
+        // Show technology in terminal
+        function showTechnology(index) {
+            const tech = technologies[index];
+            
+            // Clear output
+            terminalOutput.innerHTML = '';
+            
+            // Type command
+            typeText(commandText, tech.command, 30, () => {
+                // Wait a bit, then show output
+                setTimeout(() => {
+                    const outputLine = document.createElement('div');
+                    outputLine.style.marginTop = '10px';
+                    outputLine.innerHTML = `<span style="color: #00ff41;">→</span> <span class="terminal-tech ${tech.class}">${tech.text}</span>`;
+                    terminalOutput.appendChild(outputLine);
+                    
+                    // Wait before next tech
+                    setTimeout(() => {
+                        currentTechIndex = (currentTechIndex + 1) % technologies.length;
+                        showTechnology(currentTechIndex);
+                    }, 2000);
+                }, 500);
+            });
+        }
 
         // Create particles
         for (let i = 0; i < 50; i++) {
@@ -892,30 +1228,458 @@
             document.body.appendChild(particle);
         }
 
-        // Mouse interaction
-        let mouseX = 0;
-        let mouseY = 0;
-        let currentRotationX = 20;
-        let currentRotationY = 0;
+        // Start terminal animation
+        showTechnology(0);
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        function animate() {
-            currentRotationX += (mouseY * 10 - currentRotationX) * 0.05;
-            currentRotationY += (mouseX * 10 - currentRotationY) * 0.05;
+        // Terminal typing effect function
+        function typeText(element, text, speed = 30, callback) {
+            if (!element || !text) return;
             
-            const sphereElement = document.getElementById('sphere');
-            if (sphereElement) {
-                sphereElement.style.transform = `rotateY(${currentRotationY}deg) rotateX(${currentRotationX}deg)`;
+            element.textContent = '';
+            element.classList.add('typing-element');
+            element.classList.remove('typing-complete');
+            element.style.opacity = '1';
+            
+            let index = 0;
+            
+            function type() {
+                if (index < text.length) {
+                    element.textContent += text[index];
+                    index++;
+                    setTimeout(type, speed + Math.random() * 20); // Random speed variation for realism
+                } else {
+                    element.classList.add('typing-complete');
+                    element.classList.remove('typing-element');
+                    if (callback) callback();
+                }
             }
             
-            requestAnimationFrame(animate);
+            type();
         }
 
-        animate();
+        // Store original text content for typing animation
+        function prepareTypingElements(section) {
+            // Prepare main headings and paragraphs
+            // Exclude section indicator elements from typing animation
+            const textElements = section.querySelectorAll('h2, h3, h4, p:not(.project-card p):not(.philosophy-card p):not(.achievement-card p)');
+            
+            textElements.forEach((element) => {
+                // Skip if element is inside section indicator
+                if (element.closest('.section-indicator')) return;
+                
+                if (element.dataset.originalText === undefined) {
+                    element.dataset.originalText = element.textContent.trim();
+                    element.textContent = '';
+                    element.style.opacity = '0';
+                }
+            });
+
+            // Prepare card headers and hide cards initially
+            const cardHeaders = section.querySelectorAll('.project-card h3, .philosophy-card h3, .achievement-card h4');
+            const cards = section.querySelectorAll('.project-card, .philosophy-card, .achievement-card, .stat-card');
+            
+            cardHeaders.forEach((header) => {
+                if (header.dataset.originalText === undefined) {
+                    header.dataset.originalText = header.textContent.trim();
+                    header.textContent = '';
+                }
+            });
+
+            cards.forEach((card) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(-20px)';
+            });
+        }
+
+        // Type all text elements in sequence
+        function typeSectionContent(section) {
+            // Get all text elements in order
+            const mainTextElements = Array.from(section.querySelectorAll('h2, h3:not(.project-card h3):not(.philosophy-card h3):not(.achievement-card h4), h4:not(.achievement-card h4), p:not(.project-card p):not(.philosophy-card p):not(.achievement-card p)')).filter(el => el.dataset.originalText);
+            
+            // Get card headers
+            const cardHeaders = Array.from(section.querySelectorAll('.project-card h3, .philosophy-card h3, .achievement-card h4')).filter(el => el.dataset.originalText);
+            
+            // Combine and sort by DOM order
+            const allTextElements = [...mainTextElements, ...cardHeaders].sort((a, b) => {
+                const position = a.compareDocumentPosition(b);
+                return position & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+            });
+
+            let delay = 0;
+            const processedCards = new Set();
+
+            allTextElements.forEach((element) => {
+                const originalText = element.dataset.originalText;
+                const typingSpeed = element.tagName === 'H2' ? 25 : element.tagName === 'H3' || element.tagName === 'H4' ? 30 : 20;
+                
+                setTimeout(() => {
+                    typeText(element, originalText, typingSpeed, () => {
+                        // Show card after its header is typed
+                        const parentCard = element.closest('.project-card, .philosophy-card, .achievement-card');
+                        if (parentCard && !processedCards.has(parentCard)) {
+                            processedCards.add(parentCard);
+                            setTimeout(() => {
+                                parentCard.style.opacity = '1';
+                                parentCard.style.transform = 'translateX(0)';
+                                parentCard.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                            }, 100);
+                        }
+                    });
+                }, delay);
+                
+                delay += originalText.length * typingSpeed + 200;
+            });
+
+            // Show other elements (stat cards, links, grids) after text typing
+            setTimeout(() => {
+                const otherElements = section.querySelectorAll('.stat-card, .contact-link, .stats-container, .projects-grid, .achievements-grid, .philosophy-grid, .contact-grid');
+                otherElements.forEach((el, idx) => {
+                    setTimeout(() => {
+                        el.style.opacity = '1';
+                        el.style.transform = 'translateX(0)';
+                        el.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                    }, idx * 50);
+                });
+            }, delay);
+        }
+
+        // Scroll animation - Terminal style reveal with typing
+        // Only observe .section elements, not .hero-section
+        const sections = document.querySelectorAll('.section:not(.hero-section)');
+        const observerOptions = {
+            threshold: 0.95, // Section must be 95% visible (almost full screen)
+            rootMargin: '0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                // Only trigger when section is almost fully visible (snapped to viewport)
+                if (entry.intersectionRatio >= 0.95 && !entry.target.classList.contains('terminal-reveal')) {
+                    entry.target.classList.add('terminal-reveal');
+                    
+                    // Prepare elements for typing
+                    prepareTypingElements(entry.target);
+                    
+                    // Start typing animation after scan effect
+                    setTimeout(() => {
+                        typeSectionContent(entry.target);
+                    }, 600);
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach((section) => {
+            revealObserver.observe(section);
+        });
+
+        // Enhanced snap scroll - aggressive section switching
+        let isScrolling = false;
+        let scrollTimeout;
+        let wheelDelta = 0;
+        let lastWheelTime = 0;
+
+        function getCurrentSectionIndex() {
+            // Get all sections including hero-section
+            const heroSection = document.querySelector('.hero-section');
+            const regularSections = Array.from(document.querySelectorAll('.section:not(.hero-section)'));
+            const allSections = heroSection ? [heroSection, ...regularSections] : regularSections;
+            
+            if (allSections.length === 0) return 0;
+            
+            const viewportHeight = window.innerHeight;
+            const scrollY = window.scrollY || window.pageYOffset;
+            const viewportCenter = scrollY + (viewportHeight / 2);
+            
+            // Simple logic: find which section's center is closest to viewport center
+            let currentIndex = 0;
+            let minDistance = Infinity;
+            
+            allSections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                const sectionCenter = rect.top + scrollY + (rect.height / 2);
+                const distance = Math.abs(viewportCenter - sectionCenter);
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    currentIndex = index;
+                }
+            });
+            
+            return currentIndex;
+        }
+
+        function scrollToSection(index, direction = 0) {
+            if (isScrolling) return;
+            
+            // Get all sections including hero-section
+            const heroSection = document.querySelector('.hero-section');
+            const regularSections = Array.from(document.querySelectorAll('.section:not(.hero-section)'));
+            const allSections = heroSection ? [heroSection, ...regularSections] : regularSections;
+            
+            if (index < 0) index = 0;
+            if (index >= allSections.length) index = allSections.length - 1;
+            
+            const targetSection = allSections[index];
+            if (!targetSection) return;
+            
+            // Update section indicator
+            updateSectionIndicator(index);
+            
+            isScrolling = true;
+            targetSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                isScrolling = false;
+            }, 600);
+        }
+
+        // Get short section title for wheel display
+        function getSectionTitle(section) {
+            if (section.classList.contains('hero-section')) {
+                return 'HOME';
+            }
+            const h2 = section.querySelector('h2');
+            if (!h2) return 'Section';
+            
+            const fullTitle = h2.textContent.trim();
+            
+            // Map full titles to short versions for wheel
+            const titleMap = {
+                'TECHNOLOGY ARSENAL': 'TECH ARSENAL',
+                'PERFORMANCE METRICS': 'METRICS',
+                'SIGNATURE PROJECTS': 'PROJECTS',
+                'CURRENT FOCUS AREAS': 'FOCUS',
+                'ACHIEVEMENTS UNLOCKED': 'ACHIEVEMENTS',
+                'CONTRIBUTION FLOW': 'CONTRIBUTIONS',
+                'ENGINEERING PHILOSOPHY': 'PHILOSOPHY',
+                'TRANSMISSION CHANNELS': 'CONTACTS'
+            };
+            
+            return titleMap[fullTitle] || fullTitle;
+        }
+
+        // Simple section indicator update - just bind to scroll
+        function updateSectionIndicator(currentIndex) {
+            const wheelNumbers = document.getElementById('section-wheel-numbers');
+            if (!wheelNumbers) return;
+            
+            // Get all section number elements
+            const sectionNumbers = Array.from(wheelNumbers.querySelectorAll('.section-number'));
+            
+            // Update active/inactive classes
+            sectionNumbers.forEach((el, index) => {
+                if (index === currentIndex) {
+                    el.classList.add('active');
+                    el.classList.remove('inactive');
+                } else {
+                    el.classList.add('inactive');
+                    el.classList.remove('active');
+                }
+            });
+            
+            // Only apply transform when wheel is not expanded (not hovered)
+            const sectionIndicator = document.querySelector('.section-indicator');
+            if (sectionIndicator && !sectionIndicator.matches(':hover')) {
+                const itemHeight = 40;
+                const wheelHeight = 80;
+                const offset = (wheelHeight / 2) - ((currentIndex * itemHeight) + (itemHeight / 2));
+                wheelNumbers.style.transform = `translateY(${offset}px)`;
+            } else {
+                wheelNumbers.style.transform = 'none';
+            }
+        }
+
+        // Initialize section indicator - simple initialization
+        function initSectionIndicator() {
+            const currentIndex = getCurrentSectionIndex();
+            updateSectionIndicator(currentIndex);
+        }
+
+        // Manual wheel handling - only switch when user explicitly scrolls
+        window.addEventListener('wheel', (e) => {
+            // Don't prevent default - allow normal scrolling
+            // Only snap when user stops scrolling
+            
+            const now = Date.now();
+            const timeDelta = now - lastWheelTime;
+            lastWheelTime = now;
+            
+            // Accumulate wheel delta
+            wheelDelta += e.deltaY;
+            
+            // Reset delta if too much time passed or direction changed
+            if (timeDelta > 200 || (wheelDelta > 0 && e.deltaY < 0) || (wheelDelta < 0 && e.deltaY > 0)) {
+                wheelDelta = e.deltaY;
+            }
+            
+            // Clear any pending snap
+            clearTimeout(wheelTimeout);
+            
+            // Only snap after user stops scrolling
+            wheelTimeout = setTimeout(() => {
+                if (Math.abs(wheelDelta) > 100 && !isScrolling) {
+                    const heroSection = document.querySelector('.hero-section');
+                    const regularSections = Array.from(document.querySelectorAll('.section:not(.hero-section)'));
+                    const allSections = heroSection ? [heroSection, ...regularSections] : regularSections;
+                    
+                    const currentIndex = getCurrentSectionIndex();
+                    const direction = wheelDelta > 0 ? 1 : -1;
+                    let nextIndex = currentIndex + direction;
+                    
+                    // Clamp to valid range
+                    nextIndex = Math.max(0, Math.min(nextIndex, allSections.length - 1));
+                    
+                    // Only switch if index changed
+                    if (nextIndex !== currentIndex) {
+                        scrollToSection(nextIndex, direction);
+                    }
+                }
+                wheelDelta = 0;
+            }, 300); // Wait 300ms after last wheel event
+        }, { passive: true });
+        
+        let wheelTimeout;
+
+        // Initialize section indicator on load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                initSectionIndicator();
+                initCustomCursor();
+                initSectionClickHandlers();
+            });
+        } else {
+            initSectionIndicator();
+            initCustomCursor();
+            initSectionClickHandlers();
+        }
+
+        // Fullscreen mode function
+        function initFullscreen() {
+            function requestFullscreen() {
+                const element = document.documentElement;
+                
+                if (element.requestFullscreen) {
+                    element.requestFullscreen().catch(err => {
+                        console.log('Fullscreen request failed:', err);
+                    });
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                }
+            }
+
+            // Request fullscreen immediately
+            requestFullscreen();
+        }
+
+        // Request fullscreen on click
+        let fullscreenInitialized = false;
+        function requestFullscreenOnClick() {
+            if (!fullscreenInitialized) {
+                fullscreenInitialized = true;
+                initFullscreen();
+            }
+        }
+        
+        // Listen for first click to initialize fullscreen
+        document.addEventListener('click', requestFullscreenOnClick, { once: true });
+
+        // Simple scroll binding - update indicator directly on scroll
+        window.addEventListener('scroll', () => {
+            const currentIndex = getCurrentSectionIndex();
+            updateSectionIndicator(currentIndex);
+        }, { passive: true });
+
+        // Custom hacker green cursor
+        function initCustomCursor() {
+            const cursor = document.createElement('div');
+            cursor.className = 'custom-cursor';
+            
+            // Create SVG cursor arrow - standard pointer style
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 24 24');
+            svg.setAttribute('width', '24');
+            svg.setAttribute('height', '24');
+            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            
+            // Main arrow triangle
+            const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            arrow.setAttribute('d', 'M 3 3 L 3 13 L 6 10 L 9 19 L 11 18 L 8 9 L 12 9 L 3 3 Z');
+            arrow.setAttribute('fill', '#00ff00');
+            
+            // Arrow outline/shadow for better visibility
+            const outline = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            outline.setAttribute('d', 'M 3 3 L 3 13 L 6 10 L 9 19 L 11 18 L 8 9 L 12 9 L 3 3 Z');
+            outline.setAttribute('fill', 'none');
+            outline.setAttribute('stroke', '#00ff41');
+            outline.setAttribute('stroke-width', '0.5');
+            
+            svg.appendChild(outline);
+            svg.appendChild(arrow);
+            cursor.appendChild(svg);
+            document.body.appendChild(cursor);
+
+            let cursorX = 0;
+            let cursorY = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+
+            // Update cursor position
+        document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            // Smooth cursor animation
+            function animateCursor() {
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            // Cursor hover effects
+            const hoverElements = document.querySelectorAll('a, button, .section-number, .project-link, .contact-link');
+            hoverElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('hover');
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('hover');
+                });
+            });
+
+            // Cursor click effect
+            document.addEventListener('mousedown', () => {
+                cursor.classList.add('click');
+            });
+            document.addEventListener('mouseup', () => {
+                cursor.classList.remove('click');
+            });
+        }
+
+        // Click handler for section numbers in wheel
+        function initSectionClickHandlers() {
+            const sectionNumbers = document.querySelectorAll('.section-number');
+            sectionNumbers.forEach((el) => {
+                const index = parseInt(el.getAttribute('data-index'));
+                if (!isNaN(index)) {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        scrollToSection(index);
+                    });
+                }
+            });
+        }
     </script>
 </body>
 </html>
