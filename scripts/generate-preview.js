@@ -20,11 +20,11 @@ async function generatePreview() {
     });
     
     const context = await browser.newContext({
-        viewport: { width: 1280, height: 720 },
-        deviceScaleFactor: 2, // Higher quality
+        viewport: { width: 2560, height: 1440 }, // 2K resolution
+        deviceScaleFactor: 1, // Use native resolution
         recordVideo: {
             dir: OUTPUT_DIR,
-            size: { width: 1280, height: 720 }
+            size: { width: 2560, height: 1440 }
         }
     });
     
@@ -197,6 +197,7 @@ async function generatePreview() {
             
             console.log('  🎨 Generating optimized GIF palette from video...');
             // First generate palette from video for better quality
+            // Scale down to 1280px width for GIF (to keep file size reasonable)
             const palettePath = path.join(OUTPUT_DIR, 'palette.png');
             const paletteCommand = `ffmpeg -y -i "${TEMP_VIDEO}" -vf "fps=15,scale=1280:-1:flags=lanczos,palettegen" "${palettePath}"`;
             
@@ -204,6 +205,7 @@ async function generatePreview() {
             
             console.log('  🎬 Creating final GIF from video...');
             // Use palette to create optimized GIF from video
+            // Scale down to 1280px width for GIF (to keep file size reasonable)
             const gifCommand = `ffmpeg -y -i "${TEMP_VIDEO}" -i "${palettePath}" -filter_complex "[0:v]fps=15,scale=1280:-1:flags=lanczos[x];[x][1:v]paletteuse" -loop 0 "${PREVIEW_GIF}"`;
             
             execSync(gifCommand, { stdio: 'inherit' });
