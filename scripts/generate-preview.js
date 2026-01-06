@@ -105,7 +105,7 @@ async function generatePreview() {
                 '-i', path.join(SCREENSHOTS_DIR, 'frame-%03d.png'),
                 '-vf', 'fps=10,scale=1280:-1:flags=lanczos,palettegen',
                 palettePath
-            ].join(' ');
+            ];
             
             execSync(paletteCommand, { stdio: 'ignore' });
             
@@ -121,8 +121,9 @@ async function generatePreview() {
                 '-filter_complex', '[0:v]fps=10,scale=1280:-1:flags=lanczos[x];[x][1:v]paletteuse',
                 '-loop', '0',
                 PREVIEW_GIF
-            ].join(' ');
+            ];
             
+            // Execute command as array to avoid shell interpretation issues
             execSync(gifCommand, { stdio: 'inherit' });
             
             // Clean up palette
