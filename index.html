@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Tech Sphere</title>
+    <title>Konstantin Pichugin - Full-Stack Developer</title>
     <style>
         * {
             margin: 0;
@@ -13,18 +13,53 @@
 
         body {
             background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
+            color: #fff;
+            overflow-x: hidden;
         }
 
-        .container {
-            text-align: center;
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             position: relative;
-            z-index: 10;
+            padding: 40px 20px;
+        }
+
+        .hero-title {
+            color: #00d9ff;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+            text-align: center;
+        }
+
+        .hero-subtitle {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            text-align: center;
+        }
+
+        .status-banner {
+            background: rgba(0, 217, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px 40px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .status-banner p {
+            margin: 5px 0;
+            color: #00d9ff;
+            font-size: 0.95rem;
         }
 
         h1 {
@@ -33,6 +68,21 @@
             margin-bottom: 20px;
             text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
             animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        h2 {
+            color: #00d9ff;
+            font-size: 2rem;
+            margin: 40px 0 20px 0;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+        }
+
+        h3 {
+            color: #00d9ff;
+            font-size: 1.5rem;
+            margin: 30px 0 15px 0;
+            text-align: center;
         }
 
         @keyframes glow {
@@ -142,12 +192,14 @@
 
         /* Particles background */
         .particle {
-            position: absolute;
+            position: fixed;
             width: 2px;
             height: 2px;
             background: rgba(0, 217, 255, 0.6);
             border-radius: 50%;
             animation: float 10s linear infinite;
+            pointer-events: none;
+            z-index: 1;
         }
 
         @keyframes float {
@@ -196,10 +248,281 @@
             font-size: 14px;
             font-weight: 500;
         }
+
+        /* Section Styles */
+        .section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-content {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Stats Section */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .stat-card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .project-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
+            border-color: rgba(0, 217, 255, 0.6);
+        }
+
+        .project-card h3 {
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .project-card p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .project-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            border-radius: 8px;
+            color: #00d9ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .project-link:hover {
+            background: rgba(0, 217, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tech-tag {
+            padding: 5px 12px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #00d9ff;
+        }
+
+        /* Achievements Grid */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .achievement-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .achievement-card img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* Philosophy Cards */
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .philosophy-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .philosophy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
+            border-color: rgba(0, 217, 255, 0.5);
+        }
+
+        .philosophy-card h3 {
+            color: #00d9ff;
+            margin-bottom: 15px;
+        }
+
+        .philosophy-card p {
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .quote {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 217, 255, 0.05);
+            border-left: 4px solid #00d9ff;
+            border-radius: 8px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .contact-link {
+            padding: 15px 30px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 10px;
+            color: #00d9ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .contact-link:hover {
+            background: rgba(0, 217, 255, 0.2);
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.5);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            border-top: 1px solid rgba(0, 217, 255, 0.2);
+            margin-top: 60px;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.5), transparent);
+            margin: 40px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .sphere-container {
+                width: 100%;
+                max-width: 400px;
+                height: 400px;
+            }
+
+            .section-content {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Typing Animation Container */
+        .typing-container {
+            text-align: center;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .typing-container img {
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Hero Section with 3D Sphere -->
+    <section class="hero-section">
+        <h1 class="hero-title">KONSTANTIN PICHUGIN</h1>
+        <p class="hero-subtitle">Full-Stack Developer | Infrastructure Architect</p>
+        
+        <div class="status-banner">
+            <p>🌊 DIVING DEEP INTO THE CODE OCEAN</p>
+            <p>+ Status: Building the future, one commit at a time</p>
+            <p>! Location: Tula, Russia 🇷🇺 | Remote: 🌍 Worldwide</p>
+            <p># Current Vibe: ⚡ High Performance | 🎯 Precision Engineering</p>
+        </div>
+
         <h1>💎 EXPERTISE MATRIX</h1>
         <div class="sphere-container">
             <div class="sphere" id="sphere"></div>
@@ -222,7 +545,265 @@
                 <span class="legend-text">Frontend</span>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- GitHub Stats Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>✨ REALITY DISTORTION FIELD ✨</h2>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <img src="https://github-readme-stats.vercel.app/api?username=konstpic&show_icons=true&theme=transparent&hide_border=true&bg_color=00000000&title_color=00d9ff&text_color=ffffff&icon_color=00d9ff&ring_color=00d9ff&fire_color=ff6b6b&include_all_commits=true&count_private=true" alt="GitHub Stats"/>
+                </div>
+                <div class="stat-card">
+                    <img src="https://github-readme-streak-stats.herokuapp.com/?user=konstpic&theme=transparent&hide_border=true&background=00000000&ring=00d9ff&fire=ff6b6b&currStreakLabel=00d9ff&sideLabels=ffffff&currStreakNum=ffffff&sideNums=ffffff" alt="GitHub Streak"/>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Technology Arsenal Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>🔮 TECHNOLOGY ARSENAL</h2>
+            <h3>⚡ CORE STACK</h3>
+            
+            <div style="margin: 30px 0;">
+                <h4 style="color: #00d9ff; margin-bottom: 15px;">Backend Engineering</h4>
+                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
+                    <span class="tech-tag">Node.js</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Go</span>
+                    <span class="tech-tag">Rust</span>
+                </div>
+                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+                    <strong>Python</strong> - Advanced | <strong>Go</strong> - Proficient
+                </p>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <h4 style="color: #00d9ff; margin-bottom: 15px;">Infrastructure & DevOps</h4>
+                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">Kubernetes</span>
+                    <span class="tech-tag">Linux</span>
+                    <span class="tech-tag">Nginx</span>
+                    <span class="tech-tag">AWS</span>
+                    <span class="tech-tag">Azure</span>
+                </div>
+                <p style="text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 20px;">
+                    <strong>Docker</strong> - Master | <strong>Nginx</strong> - Expert | <strong>Linux</strong> - Wizard
+                </p>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <h4 style="color: #00d9ff; margin-bottom: 15px;">Frontend Craft</h4>
+                <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
+                    <span class="tech-tag">TypeScript</span>
+                    <span class="tech-tag">React</span>
+                    <span class="tech-tag">Next.js</span>
+                    <span class="tech-tag">Tailwind</span>
+                    <span class="tech-tag">Vite</span>
+                </div>
+                <p style="text-align: center; color: rgba(255,255,255,0.8);">
+                    <strong>TypeScript</strong> - Advanced | <strong>React</strong> - Proficient
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Performance Metrics Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>📊 PERFORMANCE METRICS</h2>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <img src="https://github-readme-activity-graph.vercel.app/graph?username=konstpic&custom_title=Contribution%20Flow&bg_color=0d1117&color=00d9ff&line=00d9ff&point=ffffff&area=true&hide_border=true&area_color=00d9ff" alt="Contribution Graph"/>
+                </div>
+                <div class="stat-card">
+                    <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=konstpic&layout=donut&theme=transparent&hide_border=true&bg_color=00000000&title_color=00d9ff&text_color=ffffff&langs_count=8" alt="Top Languages"/>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Signature Projects Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>🎯 SIGNATURE PROJECTS</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>🔥 3x-ui MySQL Fork</h3>
+                    <p>Advanced proxy management system with MySQL backend integration</p>
+                    <a href="https://github.com/konstpic/3x-ui-MySQL-fork" class="project-link" target="_blank">VIEW REPO</a>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">MySQL</span>
+                        <span class="tech-tag">Docker</span>
+                        <span class="tech-tag">Nginx</span>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>⚖️ Nginx Balancer</h3>
+                    <p>High-performance load balancing solution for distributed systems</p>
+                    <a href="https://github.com/konstpic/nginx-balancer" class="project-link" target="_blank">VIEW REPO</a>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Nginx</span>
+                        <span class="tech-tag">Linux</span>
+                        <span class="tech-tag">DevOps</span>
+                        <span class="tech-tag">Networking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Current Focus Areas Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>🧠 CURRENT FOCUS AREAS</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
+                <div class="philosophy-card">
+                    <h3 style="color: #ff6b6b;">Infrastructure</h3>
+                    <p>Load Balancing<br/>Proxy Architecture<br/>Network Optimization<br/>High Availability</p>
+                </div>
+                <div class="philosophy-card">
+                    <h3 style="color: #8a2be2;">Cloud Native</h3>
+                    <p>Kubernetes<br/>Microservices<br/>Container Orchestration<br/>CI/CD Pipelines</p>
+                </div>
+                <div class="philosophy-card">
+                    <h3 style="color: #00ff88;">Backend Development</h3>
+                    <p>API Design<br/>Database Optimization<br/>Performance Tuning<br/>Security Hardening</p>
+                </div>
+                <div class="philosophy-card">
+                    <h3 style="color: #ffd700;">DevOps Culture</h3>
+                    <p>Automation<br/>Monitoring<br/>IaC<br/>GitOps</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Achievements Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>🏆 ACHIEVEMENTS UNLOCKED</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/github/github-original.svg" alt="commits"/>
+                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Commits</h4>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Building Daily</p>
+                </div>
+                <div class="achievement-card">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="docker"/>
+                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Containerization</h4>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Master</p>
+                </div>
+                <div class="achievement-card">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="linux"/>
+                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Linux Guru</h4>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Expert Level</p>
+                </div>
+                <div class="achievement-card">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="nginx"/>
+                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Load Balancing</h4>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Optimized</p>
+                </div>
+                <div class="achievement-card">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt="nodejs"/>
+                    <h4 style="color: #00d9ff; margin: 10px 0 5px 0;">Backend Dev</h4>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Production Ready</p>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 30px;">
+                <span class="tech-tag" style="font-size: 1rem; padding: 10px 20px;">Total Stars: Counting</span>
+                <span class="tech-tag" style="font-size: 1rem; padding: 10px 20px;">Streak: Active</span>
+                <span class="tech-tag" style="font-size: 1rem; padding: 10px 20px;">Projects: Multiple</span>
+                <span class="tech-tag" style="font-size: 1rem; padding: 10px 20px;">Status: Shipping</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Contribution Flow Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>🐍 CONTRIBUTION FLOW</h2>
+            <div style="margin: 30px 0;">
+                <img src="https://raw.githubusercontent.com/konstpic/konstpic/output/github-contribution-grid-snake-dark.svg" alt="Contribution Snake" style="width: 100%; max-width: 800px; margin: 0 auto; display: block;"/>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Engineering Philosophy Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>💭 ENGINEERING PHILOSOPHY</h2>
+            <div class="philosophy-grid">
+                <div class="philosophy-card">
+                    <h3>🎯 PRECISION</h3>
+                    <p>Every line of code<br/>serves a purpose</p>
+                </div>
+                <div class="philosophy-card">
+                    <h3>⚡ PERFORMANCE</h3>
+                    <p>Optimize for speed<br/>and efficiency</p>
+                </div>
+                <div class="philosophy-card">
+                    <h3>🔒 SECURITY</h3>
+                    <p>Build systems<br/>that last</p>
+                </div>
+            </div>
+            <div class="quote">
+                "The best code is no code. The second best code is simple, elegant, and maintainable."
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Typing Animation Section -->
+    <section class="section">
+        <div class="section-content">
+            <div class="typing-container">
+                <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=00D9FF&center=true&vCenter=true&multiline=true&repeat=true&width=800&height=100&lines=Building+scalable+infrastructure+%7C+Crafting+elegant+solutions;Always+learning%2C+always+growing+%7C+Open+to+collaborations;Let's+build+something+amazing+together+%F0%9F%9A%80" alt="Typing SVG" />
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Contact Section -->
+    <section class="section">
+        <div class="section-content">
+            <h2>📡 TRANSMISSION CHANNELS</h2>
+            <div class="contact-grid">
+                <a href="https://github.com/konstpic" class="contact-link" target="_blank">GitHub</a>
+                <a href="https://t.me/konstpic" class="contact-link" target="_blank">Telegram</a>
+            </div>
+            <p style="text-align: center; margin-top: 30px; color: rgba(255,255,255,0.8);">
+                <strong>🤝 Open for Collaboration</strong><br/>
+                <span style="color: rgba(255,255,255,0.6);">Interesting Projects • Infrastructure Challenges • Open Source Contributions</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p style="font-size: 1.2rem; margin-bottom: 10px;">⚡ "In code we trust, in automation we thrive" ⚡</p>
+        <p style="color: rgba(255,255,255,0.6);">Made with 💙 and ☕ by Konstantin Pichugin</p>
+    </footer>
 
     <script>
         const tags = [
@@ -305,6 +886,11 @@
         function animate() {
             currentRotationX += (mouseY * 10 - currentRotationX) * 0.05;
             currentRotationY += (mouseX * 10 - currentRotationY) * 0.05;
+            
+            const sphereElement = document.getElementById('sphere');
+            if (sphereElement) {
+                sphereElement.style.transform = `rotateY(${currentRotationY}deg) rotateX(${currentRotationX}deg)`;
+            }
             
             requestAnimationFrame(animate);
         }
