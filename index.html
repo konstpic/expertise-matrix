@@ -1536,6 +1536,7 @@
         let audioContext;
         let initSoundPlayed = false;
         let soundMuted = false;
+        let initSoundMasterGain = null; // Master gain node for init sound volume control
         
         function initSounds() {
             try {
@@ -1543,6 +1544,12 @@
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 if (AudioContextClass) {
                     audioContext = new AudioContextClass();
+                    
+                    // Create master gain node for init sound with lower volume
+                    initSoundMasterGain = audioContext.createGain();
+                    initSoundMasterGain.gain.value = 0.1; // Reduce init sound volume to 60%
+                    initSoundMasterGain.connect(audioContext.destination);
+                    
                     // Try to resume audio context immediately (may require user interaction)
                     if (audioContext.state === 'suspended') {
                         audioContext.resume().catch(() => {
@@ -1559,6 +1566,13 @@
         function activateAudioAndPlayInit() {
             if (!audioContext) {
                 initSounds();
+            }
+            
+            // Ensure master gain is created
+            if (audioContext && !initSoundMasterGain) {
+                initSoundMasterGain = audioContext.createGain();
+                initSoundMasterGain.gain.value = 0.1; // Reduce init sound volume to 10%
+                initSoundMasterGain.connect(audioContext.destination);
             }
             
             if (audioContext) {
@@ -1587,20 +1601,26 @@
                 const gainNode = audioContext.createGain();
                 
                 oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+                // Connect through master gain node for volume control
+                if (initSoundMasterGain) {
+                    gainNode.connect(initSoundMasterGain);
+                } else {
+                    gainNode.connect(audioContext.destination);
+                }
                 
-                // Create a startup/initialization sound: ascending tone
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
-                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.2);
+                // Create a startup/initialization sound: short and simple like typing sound
+                oscillator.type = 'sine'; // Softer than square wave
+                oscillator.frequency.setValueAtTime(550, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.03);
                 
                 gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.05);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                // Lower base gain - master gain (0.1) will multiply this
+                // Final volume: 0.03 * 0.1 = 0.003 (much quieter)
+                gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.002);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.04);
                 
                 oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
+                oscillator.stop(audioContext.currentTime + 0.04);
                 
                 return oscillator;
             } catch (e) {
