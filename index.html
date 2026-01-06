@@ -604,8 +604,11 @@
                 top: 10px;
                 right: 10px;
                 transform: scale(0.8);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
-
+            
             .section-wheel {
                 width: 140px;
                 height: 60px;
@@ -642,10 +645,18 @@
         }
 
         @media (max-width: 480px) {
+            .control-buttons {
+                top: 5px;
+                left: 5px;
+                align-items: center;
+            }
+            
             .section-indicator {
                 top: 5px;
                 right: 5px;
                 transform: scale(0.7);
+                display: flex;
+                align-items: center;
             }
 
             .section-wheel {
@@ -703,6 +714,7 @@
                 top: 10px;
                 left: 10px;
                 gap: 8px;
+                align-items: center;
             }
             
             .control-button {
@@ -1837,7 +1849,14 @@
         let initSoundPlayed = false;
         let soundMuted = false;
         let initSoundMasterGain = null; // Master gain node for init sound volume control
-        let neonBlinkSound = null; // Sound for neon blink effect
+        let neonBlinkSound = null; // Sound for neon blink effect (HTMLAudioElement)
+        let neonBlinkBuffer = null; // AudioBuffer for neon blink sound (for reverb)
+        let neonBlinkSource = null; // MediaElementSource for neon blink sound
+        let keyClickBuffer = null; // AudioBuffer for keyboard click sound
+        let backgroundMusic = null; // Background music
+        let reverbConvolver = null; // Reverb effect
+        let reverbGain = null; // Reverb gain control
+        let reverbAmount = 0.2; // Reverb amount (0.2 = 20% default)
         
         function initSounds() {
             try {
@@ -1848,13 +1867,28 @@
                     
                     // Create master gain node for init sound with lower volume
                     initSoundMasterGain = audioContext.createGain();
-                    initSoundMasterGain.gain.value = 0.1; // Reduce init sound volume to 60%
+                    initSoundMasterGain.gain.value = 0.1; // Reduce init sound volume to 60%1
                     initSoundMasterGain.connect(audioContext.destination);
                     
+                    // Create reverb effect first (needed for neon sound)
+                    createReverbEffect();
+                    
                     // Initialize neon blink sound
+                    // Use HTMLAudioElement directly (works with file:// protocol, no CORS issues)
                     neonBlinkSound = new Audio('media/sound_lamp.mp3');
-                    neonBlinkSound.volume = 0.3;
+                    neonBlinkSound.volume = 0.08;
                     neonBlinkSound.preload = 'auto';
+                    
+                    // Note: Both sounds use HTMLAudioElement directly (works with file:// protocol)
+                    // AudioBuffer loading functions are available but not used for file:// compatibility
+                    // loadNeonBlinkSound(); // Only works with http/https, not file://
+                    // loadKeyClickSound(); // Only works with http/https, not file://
+                    
+                    // Initialize background music
+                    backgroundMusic = new Audio('media/background.mp3');
+                    backgroundMusic.volume = 0.01; // 10% volume
+                    backgroundMusic.loop = true; // Loop infinitely
+                    backgroundMusic.preload = 'auto';
                     
                     // Try to resume audio context immediately (may require user interaction)
                     if (audioContext.state === 'suspended') {
@@ -1935,29 +1969,131 @@
             }
         }
 
-        function createTypingSound() {
-            if (!audioContext) return null;
+        // Load neon blink sound as AudioBuffer (only works with http/https, not file://)
+        // Note: Currently not used - we use HTMLAudioElement directly for file:// compatibility
+        async function loadNeonBlinkSound() {
+            if (!audioContext) return;
+            
+            // Only try to load if we're in a web context (not file://)
+            if (window.location.protocol === 'file:') {
+                return; // Skip loading for file:// protocol
+            }
             
             try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+                const response = await fetch('media/sound_lamp.mp3');
+                const arrayBuffer = await response.arrayBuffer();
+                neonBlinkBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                console.log('Neon blink sound loaded as AudioBuffer');
+            } catch (e) {
+                // Silent fail - will use HTMLAudioElement fallback
+            }
+        }
+        
+        // Load key click sound as AudioBuffer (only works with http/https, not file://)
+        async function loadKeyClickSound() {
+            if (!audioContext) return;
+            
+            // Only try to load if we're in a web context (not file://)
+            if (window.location.protocol === 'file:') {
+                // Skip loading for file:// protocol - will use HTMLAudioElement fallback
+                return;
+            }
+            
+            try {
+                const response = await fetch('media/key_click.mp3');
+                const arrayBuffer = await response.arrayBuffer();
+                keyClickBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                console.log('Key click sound loaded as AudioBuffer');
+            } catch (e) {
+                console.log('Failed to load key click sound as AudioBuffer:', e);
+            }
+        }
+        
+        // Play neon blink sound (using HTMLAudioElement - works with file:// protocol)
+        function playNeonBlinkSoundWithReverb() {
+            if (soundMuted || !neonBlinkSound) return;
+            
+            // Use HTMLAudioElement directly (works with file:// protocol)
+            // Note: Reverb is not available with HTMLAudioElement, but sound will work
+            try {
+                neonBlinkSound.currentTime = 0;
+                neonBlinkSound.play().catch(() => {
+                    // Silent fail if audio context not ready
+                });
+            } catch (e) {
+                console.log('Failed to play neon blink sound:', e);
+            }
+        }
+        
+        // Create reverb effect using ConvolverNode
+        function createReverbEffect() {
+            if (!audioContext) return;
+            
+            try {
+                // Create a simple impulse response for reverb
+                const sampleRate = audioContext.sampleRate;
+                const length = sampleRate * 2; // 2 seconds
+                const impulse = audioContext.createBuffer(2, length, sampleRate);
                 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+                // Generate impulse response (exponential decay)
+                for (let channel = 0; channel < 2; channel++) {
+                    const channelData = impulse.getChannelData(channel);
+                    for (let i = 0; i < length; i++) {
+                        const n = length - i;
+                        channelData[i] = (Math.random() * 2 - 1) * Math.pow(n / length, 2);
+                    }
+                }
                 
-                // Create a softer keyboard click sound: sine wave with lower frequency
-                oscillator.type = 'sine'; // Softer than square wave
-                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(500, audioContext.currentTime + 0.025);
+                // Create convolver and gain nodes
+                reverbConvolver = audioContext.createConvolver();
+                reverbConvolver.buffer = impulse;
                 
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.002); // Softer volume
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.04); // Longer fade
+                reverbGain = audioContext.createGain();
+                reverbGain.gain.value = reverbAmount;
                 
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.04);
+                reverbConvolver.connect(reverbGain);
+                reverbGain.connect(audioContext.destination);
+            } catch (e) {
+                console.log('Failed to create reverb effect:', e);
+            }
+        }
+        
+        // Set reverb amount in percentage (0-100)
+        function setReverbAmount(percentage) {
+            reverbAmount = Math.max(0, Math.min(1, percentage / 100));
+            if (reverbGain) {
+                reverbGain.gain.value = reverbAmount;
+            }
+            // Update neon blink sound reverb mix if connected
+            // Note: We need to store references to gain nodes to update them
+            if (neonBlinkSource && neonBlinkSound._neonDryGain && neonBlinkSound._neonWetGain) {
+                neonBlinkSound._neonDryGain.gain.value = 1 - reverbAmount;
+                neonBlinkSound._neonWetGain.gain.value = reverbAmount;
+            }
+        }
+        
+        function createTypingSound() {
+            // Always use HTMLAudioElement for key_click.mp3 (works with file:// protocol)
+            // This allows pitch and volume variations without CORS issues
+            try {
+                const sound = new Audio('media/key_click.mp3');
                 
-                return oscillator;
+                // Random pitch variation to simulate different typing force
+                // Pitch range: 0.85 to 1.15 (85% to 115% of original speed)
+                // Lower pitch = heavier press, higher pitch = lighter press
+                const pitchVariation = 0.85 + Math.random() * 0.3; // 0.85 to 1.15
+                sound.playbackRate = pitchVariation;
+                
+                // Volume variation based on "typing force" (inverse of pitch)
+                // Heavier press (lower pitch) = louder, lighter press (higher pitch) = quieter
+                const volumeVariation = 0.4 + (1.15 - pitchVariation) * 0.3; // 0.4 to 0.85
+                sound.volume = volumeVariation;
+                
+                sound.play().catch(() => {
+                    // Silent fail if audio context not ready
+                });
+                
+                return sound;
             } catch (e) {
                 console.log('Failed to create typing sound:', e);
                 return null;
@@ -1988,32 +2124,9 @@
         function playTypingSound() {
             if (soundMuted) return;
             
-            try {
-                // Ensure audio context exists
-                if (!audioContext) {
-                    initSounds();
-                }
-                
-                // Resume audio context if suspended (important for mobile devices)
-                if (audioContext) {
-                    if (audioContext.state === 'suspended') {
-                        // Try to resume - this requires user interaction on mobile
-                        audioContext.resume().then(() => {
-                            // Only play sound if context is now running
-                            if (audioContext.state === 'running') {
-                                createTypingSound();
-                            }
-                        }).catch(e => {
-                            // Silent fail for typing sounds - will retry on next interaction
-                        });
-                    } else if (audioContext.state === 'running') {
-                        // Context is already running, play sound immediately
-                        createTypingSound();
-                    }
-                }
-            } catch (e) {
-                // Silent fail for typing sounds
-            }
+            // Simply create and play the sound - HTMLAudioElement works without Web Audio API
+            // and works with file:// protocol
+            createTypingSound();
         }
 
 
@@ -2066,6 +2179,7 @@
         // Track terminal animation timers to stop them when switching sections
         let terminalTimers = new Set();
         let terminalAnimationActive = false;
+        let terminalSectionIndex = -1; // Track which section has terminal active
 
         // Typewriter effect
         function typeText(element, text, speed = 100, callback) {
@@ -2178,9 +2292,8 @@
             document.body.appendChild(particle);
         }
 
-        // Start terminal animation
-        terminalAnimationActive = true;
-        showTechnology(0);
+        // Terminal animation will be started by handleSectionChange when hero-section is active
+        // Don't start automatically to avoid conflicts
 
         // Terminal typing effect function
         function typeText(element, text, speed = 100, callback) {
@@ -2241,6 +2354,21 @@
             type();
         }
         
+        // Stop all sounds (typing sounds and neon blink sound) without stopping animations
+        function stopAllSounds() {
+            // Stop neon blink sound if playing
+            if (neonBlinkSound) {
+                try {
+                    neonBlinkSound.pause();
+                    neonBlinkSound.currentTime = 0;
+                } catch (e) {
+                    // Silent fail
+                }
+            }
+            // Note: Typing sounds are created on-the-fly and don't need to be stopped
+            // They will automatically stop when typing animation stops
+        }
+        
         // Stop all active typing animations
         function stopAllTypingAnimations() {
             // Clear all active timers
@@ -2259,17 +2387,18 @@
                 element.classList.add('typing-complete');
             });
             
+            // Stop sounds when switching sections
+            stopAllSounds();
+            
             // Stop terminal animation when switching sections
             stopTerminalAnimation();
-            
-            // Stop neon blink effect when switching sections
-            stopNeonBlinkEffect();
         }
         
         // Stop terminal animation
         function stopTerminalAnimation() {
             // Stop terminal animation flag
             terminalAnimationActive = false;
+            terminalSectionIndex = -1;
             
             // Clear all terminal timers
             terminalTimers.forEach(timerId => {
@@ -2278,8 +2407,10 @@
             terminalTimers.clear();
             
             // Stop typing animation in terminal if active
-            if (commandText && commandText._cancelTyping) {
-                commandText._cancelTyping();
+            if (commandText) {
+                if (commandText._cancelTyping) {
+                    commandText._cancelTyping();
+                }
             }
             
             // Reset typing state
@@ -2308,6 +2439,7 @@
                     // Silent fail
                 }
             }
+            // Note: AudioBufferSourceNode sources are one-shot and don't need to be stopped
         }
 
         // Store original text content for typing animation
@@ -2437,38 +2569,11 @@
             rootMargin: isMobile ? '0px' : '0px'
         };
 
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                // Adaptive threshold check based on screen size
-                const currentThreshold = window.innerWidth <= 768 ? 0.5 : 0.95;
-                
-                // Only trigger when section is visible enough
-                if (entry.intersectionRatio >= currentThreshold && !entry.target.classList.contains('terminal-reveal')) {
-                    entry.target.classList.add('terminal-reveal');
-                    
-                    // Stop previous animations before starting new one
-                    stopAllTypingAnimations();
-                    
-                    // Prepare elements for typing
-                    prepareTypingElements(entry.target);
-                    
-                    // Start typing animation after scan effect
-                    setTimeout(() => {
-                        typeSectionContent(entry.target);
-                    }, 600);
-                } else if (entry.intersectionRatio < 0.3) {
-                    // If section is no longer visible, stop its animations
-                    if (currentTypingSection === entry.target) {
-                        stopAllTypingAnimations();
-                        currentTypingSection = null;
-                    }
-                }
-            });
-        }, observerOptions);
-
-        sections.forEach((section) => {
-            revealObserver.observe(section);
-        });
+        // IntersectionObserver is now disabled - section animations are controlled by scroll events
+        // This allows proper handling of snap scroll behavior
+        // sections.forEach((section) => {
+        //     revealObserver.observe(section);
+        // });
 
         // Enhanced snap scroll - aggressive section switching
         let isScrolling = false;
@@ -2509,10 +2614,6 @@
         function scrollToSection(index, direction = 0) {
             if (isScrolling) return;
             
-            // Stop all typing animations when switching sections
-            stopAllTypingAnimations();
-            currentTypingSection = null;
-            
             // Get all sections including hero-section
             const heroSection = document.querySelector('.hero-section');
             const regularSections = Array.from(document.querySelectorAll('.section:not(.hero-section)'));
@@ -2523,6 +2624,13 @@
             
             const targetSection = allSections[index];
             if (!targetSection) return;
+            
+            // Update current section index immediately to prevent double handling
+            previousSectionIndex = currentSectionIndex;
+            currentSectionIndex = index;
+            
+            // Handle section change (animations will be managed by scroll handler)
+            handleSectionChange(index, previousSectionIndex);
             
             // Update section indicator
             updateSectionIndicator(index);
@@ -2536,6 +2644,14 @@
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 isScrolling = false;
+                // After scroll completes, verify current section and handle if needed
+                const actualIndex = getCurrentSectionIndex();
+                if (actualIndex !== currentSectionIndex) {
+                    previousSectionIndex = currentSectionIndex;
+                    currentSectionIndex = actualIndex;
+                    handleSectionChange(actualIndex, previousSectionIndex);
+                    updateSectionIndicator(actualIndex);
+                }
             }, 600);
         }
 
@@ -2694,15 +2810,9 @@
                 let currentBlink = 0;
                 
                 // Play neon blink sound only if in hero-section
-                if (neonBlinkSound && !soundMuted && heroSection && heroSection.contains(element)) {
-                    try {
-                        neonBlinkSound.currentTime = 0;
-                        neonBlinkSound.play().catch(() => {
-                            // Silent fail if audio context not ready
-                        });
-                    } catch (e) {
-                        // Silent fail
-                    }
+                if (!soundMuted && heroSection && heroSection.contains(element)) {
+                    // Use AudioBuffer with reverb if available, otherwise fallback to HTMLAudioElement
+                    playNeonBlinkSoundWithReverb();
                 }
                 
                 // Turn on the light
@@ -2801,7 +2911,27 @@
             initSectionClickHandlers();
             initControlButtons();
             initGlitchEffect();
-            initNeonBlinkEffect();
+            
+            // Start background music after user interaction (if not muted)
+            const startBackgroundMusic = () => {
+                if (backgroundMusic && !soundMuted) {
+                    backgroundMusic.play().catch(() => {
+                        // Silent fail - may require user interaction
+                    });
+                }
+            };
+            
+            // Start music on first user interaction
+            document.addEventListener('click', startBackgroundMusic, { once: true });
+            document.addEventListener('touchstart', startBackgroundMusic, { once: true });
+            document.addEventListener('keydown', startBackgroundMusic, { once: true });
+            
+            // Initialize current section and start animations
+            requestAnimationFrame(() => {
+                const initialIndex = getCurrentSectionIndex();
+                currentSectionIndex = initialIndex;
+                handleSectionChange(initialIndex, -1);
+            });
         }
         
         if (document.readyState === 'loading') {
@@ -2909,6 +3039,19 @@
             }
             
             soundMuted = !soundMuted;
+            
+            // Control background music
+            if (backgroundMusic) {
+                if (soundMuted) {
+                    backgroundMusic.pause();
+                } else {
+                    // Try to play background music
+                    backgroundMusic.play().catch(() => {
+                        // Silent fail - may require user interaction
+                    });
+                }
+            }
+            
             const muteBtn = document.getElementById('mute-btn');
             if (muteBtn) {
                 if (soundMuted) {
@@ -2952,10 +3095,123 @@
             document.addEventListener('MSFullscreenChange', updateFullscreenButton);
         }
 
-        // Simple scroll binding - update indicator directly on scroll
+        // Track current section for animation control (initialized in scroll handler)
+        let currentSectionIndex = -1;
+        let previousSectionIndex = -1;
+        let neonBlinkInitialized = false;
+        
+        // Get section element by index
+        function getSectionByIndex(index) {
+            const heroSection = document.querySelector('.hero-section');
+            const regularSections = Array.from(document.querySelectorAll('.section:not(.hero-section)'));
+            const allSections = heroSection ? [heroSection, ...regularSections] : regularSections;
+            return allSections[index] || null;
+        }
+        
+        // Handle section change - stop previous animations and start new ones
+        function handleSectionChange(newIndex, oldIndex) {
+            // Stop sounds from previous section
+            stopAllSounds();
+            
+            // Stop animations from previous section
+            if (oldIndex >= 0) {
+                const oldSection = getSectionByIndex(oldIndex);
+                if (oldSection) {
+                    // Stop typing animations
+                    if (currentTypingSection === oldSection) {
+                        stopAllTypingAnimations();
+                        currentTypingSection = null;
+                    }
+                    // Remove terminal-reveal class to allow restart on return
+                    oldSection.classList.remove('terminal-reveal');
+                }
+                
+                // If leaving hero-section, stop neon blink and terminal animation
+                if (oldIndex === 0) {
+                    if (neonBlinkInitialized) {
+                        stopNeonBlinkEffect();
+                        neonBlinkInitialized = false;
+                    }
+                    // Stop terminal animation
+                    stopTerminalAnimation();
+                }
+            }
+            
+            // Start animations for new section
+            if (newIndex >= 0) {
+                const newSection = getSectionByIndex(newIndex);
+                if (newSection) {
+                    // Handle hero-section (index 0) - start neon blink and terminal animation
+                    if (newIndex === 0) {
+                        // Start neon blink if not already initialized
+                        if (!neonBlinkInitialized) {
+                            neonBlinkInitialized = true;
+                            initNeonBlinkEffect();
+                        }
+                        
+                        // Restart terminal animation (only if not already running for this section)
+                        if (commandText && terminalOutput) {
+                            // If terminal is already running for this section, don't restart
+                            if (terminalSectionIndex === 0 && terminalAnimationActive) {
+                                return;
+                            }
+                            
+                            // Stop any existing terminal animation first
+                            stopTerminalAnimation();
+                            terminalSectionIndex = -1;
+                            
+                            // Also stop all typing animations to ensure clean state
+                            if (commandText._cancelTyping) {
+                                commandText._cancelTyping();
+                            }
+                            
+                            // Clear terminal
+                            commandText.textContent = '';
+                            terminalOutput.innerHTML = '';
+                            
+                            // Small delay to ensure previous animation is fully stopped
+                            setTimeout(() => {
+                                // Double check that animation is stopped and start fresh
+                                if (terminalAnimationActive) {
+                                    stopTerminalAnimation();
+                                }
+                                // Ensure clean state
+                                terminalAnimationActive = false;
+                                currentTechIndex = 0;
+                                
+                                // Now start fresh
+                                terminalSectionIndex = 0;
+                                terminalAnimationActive = true;
+                                showTechnology(0);
+                            }, 200);
+                        }
+                    }
+                    
+                    // Handle regular sections - start typing animation
+                    if (!newSection.classList.contains('hero-section')) {
+                        if (!newSection.classList.contains('terminal-reveal')) {
+                            newSection.classList.add('terminal-reveal');
+                            prepareTypingElements(newSection);
+                            setTimeout(() => {
+                                typeSectionContent(newSection);
+                            }, 600);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Simple scroll binding - update indicator and handle section changes
         window.addEventListener('scroll', () => {
             const currentIndex = getCurrentSectionIndex();
             updateSectionIndicator(currentIndex);
+            
+            // Check if section changed (only if not currently programmatically scrolling)
+            if (currentIndex !== currentSectionIndex && !isScrolling) {
+                previousSectionIndex = currentSectionIndex;
+                currentSectionIndex = currentIndex;
+                handleSectionChange(currentIndex, previousSectionIndex);
+            }
         }, { passive: true });
 
         // Custom hacker green cursor
