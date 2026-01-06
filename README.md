@@ -5,6 +5,33 @@
 
 </div>
 
+<br/>
+
+<!-- Live Preview Section -->
+<div align="center">
+
+## 🚀 LIVE PREVIEW
+
+<p align="center">
+  <a href="https://konstpic.github.io/expertise-matrix/" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_VISIT_LIVE_SITE-00d9ff?style=for-the-badge&logo=vercel&logoColor=white&labelColor=1a1a1a" alt="Live Site"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://konstpic.github.io/expertise-matrix/" target="_blank">
+    <img src="https://raw.githubusercontent.com/konstpic/expertise-matrix/main/preview.gif" width="100%" alt="Expertise Matrix Preview" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 217, 255, 0.3);"/>
+  </a>
+</p>
+
+<p align="center">
+  <sub>✨ Click the image above to explore the interactive expertise matrix ✨</sub>
+</p>
+
+</div>
+
+<br/>
+
 <!-- Animated Status Banner -->
 <div align="center">
   
@@ -55,12 +82,12 @@
 
 <p align="center">
   <a href="https://konstpic.github.io/expertise-matrix/" target="_blank">
-    🚀 Open Interactive 3D Expertise Matrix
+    <img src="https://img.shields.io/badge/🚀_OPEN_INTERACTIVE_MATRIX-00d9ff?style=for-the-badge&logo=github&logoColor=white&labelColor=1a1a1a" alt="Open Matrix"/>
   </a>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/konstpic/expertise-matrix/main/preview.png" width="800"/>
+  <sub>Interactive terminal-style portfolio showcasing technology expertise</sub>
 </p>
 
 ### 🎯 Technology Categories

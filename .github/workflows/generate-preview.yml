@@ -1,0 +1,48 @@
+name: Generate Preview GIF
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - 'media/**'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-preview:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      
+      - name: Generate preview GIF
+        env:
+          SITE_URL: 'https://konstpic.github.io/expertise-matrix/'
+        run: npm run generate-preview
+      
+      - name: Commit and push preview
+        if: success()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add preview.gif
+          git diff --staged --quiet || (git commit -m "🤖 Auto-generate preview GIF [skip ci]" && git push)

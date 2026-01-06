@@ -1,0 +1,11 @@
+{
+  "name": "expertise-matrix",
+  "version": "1.0.0",
+  "description": "Interactive terminal-style portfolio",
+  "scripts": {
+    "generate-preview": "node scripts/generate-preview.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}

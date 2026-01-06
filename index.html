@@ -700,7 +700,19 @@
 
         @media (max-width: 768px) {
             .control-buttons {
-                display: none; /* Hide on mobile */
+                top: 10px;
+                left: 10px;
+                gap: 8px;
+            }
+            
+            .control-button {
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+            
+            /* Hide fullscreen button on mobile, show only sound button */
+            #fullscreen-btn {
+                display: none;
             }
         }
 
@@ -1825,6 +1837,7 @@
         let initSoundPlayed = false;
         let soundMuted = false;
         let initSoundMasterGain = null; // Master gain node for init sound volume control
+        let neonBlinkSound = null; // Sound for neon blink effect
         
         function initSounds() {
             try {
@@ -1837,6 +1850,11 @@
                     initSoundMasterGain = audioContext.createGain();
                     initSoundMasterGain.gain.value = 0.1; // Reduce init sound volume to 60%
                     initSoundMasterGain.connect(audioContext.destination);
+                    
+                    // Initialize neon blink sound
+                    neonBlinkSound = new Audio('media/sound_lamp.mp3');
+                    neonBlinkSound.volume = 0.3;
+                    neonBlinkSound.preload = 'auto';
                     
                     // Try to resume audio context immediately (may require user interaction)
                     if (audioContext.state === 'suspended') {
@@ -1976,15 +1994,22 @@
                     initSounds();
                 }
                 
-                // Resume audio context if suspended
-                if (audioContext && audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
+                // Resume audio context if suspended (important for mobile devices)
+                if (audioContext) {
+                    if (audioContext.state === 'suspended') {
+                        // Try to resume - this requires user interaction on mobile
+                        audioContext.resume().then(() => {
+                            // Only play sound if context is now running
+                            if (audioContext.state === 'running') {
+                                createTypingSound();
+                            }
+                        }).catch(e => {
+                            // Silent fail for typing sounds - will retry on next interaction
+                        });
+                    } else if (audioContext.state === 'running') {
+                        // Context is already running, play sound immediately
                         createTypingSound();
-                    }).catch(e => {
-                        // Silent fail for typing sounds
-                    });
-                } else if (audioContext) {
-                    createTypingSound();
+                    }
                 }
             } catch (e) {
                 // Silent fail for typing sounds
@@ -2034,6 +2059,13 @@
         // Track active typing animations to prevent overlapping sounds
         let activeTypingTimers = new Set();
         let currentTypingSection = null;
+        
+        // Track neon blink timers to stop them when switching sections
+        let activeNeonBlinkTimers = new Set();
+        
+        // Track terminal animation timers to stop them when switching sections
+        let terminalTimers = new Set();
+        let terminalAnimationActive = false;
 
         // Typewriter effect
         function typeText(element, text, speed = 100, callback) {
@@ -2041,8 +2073,24 @@
             isTyping = true;
             element.textContent = '';
             let index = 0;
+            let timerId = null;
+            let isCancelled = false;
             
             function type() {
+                // Check if terminal animation was stopped (for terminal only)
+                if (element === commandText && !terminalAnimationActive) {
+                    isCancelled = true;
+                    isTyping = false;
+                    return;
+                }
+                
+                if (isCancelled) {
+                    if (timerId) {
+                        activeTypingTimers.delete(timerId);
+                    }
+                    return;
+                }
+                
                 if (index < text.length) {
                     const char = text[index];
                     element.textContent += char;
@@ -2056,18 +2104,35 @@
                     
                     // Faster typing for spaces (no sound), slower for regular characters
                     const charSpeed = char === ' ' ? speed * 0.3 : speed + Math.random() * 30;
-                    setTimeout(type, charSpeed);
+                    timerId = setTimeout(type, charSpeed);
+                    activeTypingTimers.add(timerId);
                 } else {
+                    if (timerId) {
+                        activeTypingTimers.delete(timerId);
+                    }
                     isTyping = false;
                     if (callback) callback();
                 }
             }
+            
+            // Store cancel function on element for later cleanup
+            element._cancelTyping = () => {
+                isCancelled = true;
+                if (timerId) {
+                    clearTimeout(timerId);
+                    activeTypingTimers.delete(timerId);
+                }
+                isTyping = false;
+            };
             
             type();
         }
 
         // Show technology in terminal
         function showTechnology(index) {
+            // Don't continue if terminal animation was stopped
+            if (!terminalAnimationActive) return;
+            
             const tech = technologies[index];
             
             // Clear output
@@ -2075,19 +2140,29 @@
             
             // Type command
             typeText(commandText, tech.command, 100, () => {
+                // Don't continue if terminal animation was stopped
+                if (!terminalAnimationActive) return;
+                
                 // Wait a bit, then show output
-                setTimeout(() => {
+                const timer1 = setTimeout(() => {
+                    if (!terminalAnimationActive) return;
+                    
                     const outputLine = document.createElement('div');
                     outputLine.style.marginTop = '10px';
                     outputLine.innerHTML = `<span style="color: #00ff41;">→</span> <span class="terminal-tech ${tech.class}">${tech.text}</span>`;
                     terminalOutput.appendChild(outputLine);
                     
                     // Wait before next tech
-                    setTimeout(() => {
+                    const timer2 = setTimeout(() => {
+                        if (!terminalAnimationActive) return;
                         currentTechIndex = (currentTechIndex + 1) % technologies.length;
                         showTechnology(currentTechIndex);
+                        terminalTimers.delete(timer2);
                     }, 2000);
+                    terminalTimers.add(timer2);
+                    terminalTimers.delete(timer1);
                 }, 500);
+                terminalTimers.add(timer1);
             });
         }
 
@@ -2104,6 +2179,7 @@
         }
 
         // Start terminal animation
+        terminalAnimationActive = true;
         showTechnology(0);
 
         // Terminal typing effect function
@@ -2182,6 +2258,56 @@
                 element.classList.remove('typing-element');
                 element.classList.add('typing-complete');
             });
+            
+            // Stop terminal animation when switching sections
+            stopTerminalAnimation();
+            
+            // Stop neon blink effect when switching sections
+            stopNeonBlinkEffect();
+        }
+        
+        // Stop terminal animation
+        function stopTerminalAnimation() {
+            // Stop terminal animation flag
+            terminalAnimationActive = false;
+            
+            // Clear all terminal timers
+            terminalTimers.forEach(timerId => {
+                clearTimeout(timerId);
+            });
+            terminalTimers.clear();
+            
+            // Stop typing animation in terminal if active
+            if (commandText && commandText._cancelTyping) {
+                commandText._cancelTyping();
+            }
+            
+            // Reset typing state
+            isTyping = false;
+        }
+        
+        // Stop neon blink effect
+        function stopNeonBlinkEffect() {
+            // Clear all neon blink timers
+            activeNeonBlinkTimers.forEach(timerId => {
+                clearTimeout(timerId);
+            });
+            activeNeonBlinkTimers.clear();
+            
+            // Remove lit class from all neon-burnt elements
+            document.querySelectorAll('.neon-burnt').forEach(element => {
+                element.classList.remove('lit');
+            });
+            
+            // Stop neon sound if playing
+            if (neonBlinkSound) {
+                try {
+                    neonBlinkSound.pause();
+                    neonBlinkSound.currentTime = 0;
+                } catch (e) {
+                    // Silent fail
+                }
+            }
         }
 
         // Store original text content for typing animation
@@ -2547,36 +2673,70 @@
             }, 2000);
         }
 
-        // Initialize asynchronous neon blink effect for burnt parts
+        // Initialize asynchronous neon blink effect for burnt parts (only in hero-section)
         function initNeonBlinkEffect() {
-            const burntParts = document.querySelectorAll('.hero-title .neon-burnt');
+            // Only work in hero-section
+            const heroSection = document.querySelector('.hero-section');
+            if (!heroSection) return;
+            
+            const burntParts = heroSection.querySelectorAll('.hero-title .neon-burnt');
             if (burntParts.length === 0) return;
             
             // Function to trigger lighting sequence (2-3 blinks, then turn off)
             function triggerLight(element) {
+                // Check if element is still in hero-section (prevent triggering on other sections)
+                const heroSection = document.querySelector('.hero-section');
+                if (!heroSection || !heroSection.contains(element)) {
+                    return;
+                }
+                
                 const blinkCount = 2 + Math.floor(Math.random() * 2); // 2 or 3 blinks
                 let currentBlink = 0;
+                
+                // Play neon blink sound only if in hero-section
+                if (neonBlinkSound && !soundMuted && heroSection && heroSection.contains(element)) {
+                    try {
+                        neonBlinkSound.currentTime = 0;
+                        neonBlinkSound.play().catch(() => {
+                            // Silent fail if audio context not ready
+                        });
+                    } catch (e) {
+                        // Silent fail
+                    }
+                }
                 
                 // Turn on the light
                 element.classList.add('lit');
                 
                 function doBlink() {
+                    // Check again if still in hero-section
+                    const heroSection = document.querySelector('.hero-section');
+                    if (!heroSection || !heroSection.contains(element)) {
+                        element.classList.remove('lit');
+                        return;
+                    }
+                    
                     if (currentBlink < blinkCount) {
                         currentBlink++;
                         // Small delay between blinks
-                        setTimeout(doBlink, 200);
+                        const timerId = setTimeout(doBlink, 200);
+                        activeNeonBlinkTimers.add(timerId);
                     } else {
                         // After all blinks, turn off
-                        setTimeout(() => {
+                        const timerId = setTimeout(() => {
                             element.classList.remove('lit');
+                            activeNeonBlinkTimers.delete(timerId);
                         }, 600); // Duration of blink animation
+                        activeNeonBlinkTimers.add(timerId);
                     }
                 }
                 
                 // Start blinking after a short delay
-                setTimeout(() => {
+                const timerId = setTimeout(() => {
                     doBlink();
+                    activeNeonBlinkTimers.delete(timerId);
                 }, 100);
+                activeNeonBlinkTimers.add(timerId);
             }
             
             // Schedule blinking for each part independently
@@ -2585,17 +2745,27 @@
                 const initialDelay = 3000 + Math.random() * 2000 + (index * 800);
                 
                 function scheduleNextLight() {
+                    // Check if element is still in hero-section
+                    const heroSection = document.querySelector('.hero-section');
+                    if (!heroSection || !heroSection.contains(element)) {
+                        return;
+                    }
+                    
                     const delay = 2000 + Math.random() * 2000; // 2-4 seconds between lights
-                    setTimeout(() => {
+                    const timerId = setTimeout(() => {
                         triggerLight(element);
                         scheduleNextLight();
+                        activeNeonBlinkTimers.delete(timerId);
                     }, delay);
+                    activeNeonBlinkTimers.add(timerId);
                 }
                 
                 // Start after initial delay
-                setTimeout(() => {
+                const timerId = setTimeout(() => {
                     scheduleNextLight();
+                    activeNeonBlinkTimers.delete(timerId);
                 }, initialDelay);
+                activeNeonBlinkTimers.add(timerId);
             });
         }
 
@@ -2607,11 +2777,23 @@
             const playInitOnInteraction = () => {
                 activateAudioAndPlayInit();
             };
-            // Use mousemove as primary trigger - it's the least intrusive interaction
-            document.addEventListener('mousemove', playInitOnInteraction, { once: true });
-            document.addEventListener('click', playInitOnInteraction, { once: true });
+            
+            // For mobile devices, prioritize touch events to ensure audio context is activated
+            const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+            
+            if (isMobile) {
+                // On mobile, activate audio on touchstart (most reliable)
+                document.addEventListener('touchstart', playInitOnInteraction, { once: true, passive: true });
+                document.addEventListener('touchend', playInitOnInteraction, { once: true, passive: true });
+                document.addEventListener('click', playInitOnInteraction, { once: true });
+            } else {
+                // On desktop, use mousemove as primary trigger - it's the least intrusive interaction
+                document.addEventListener('mousemove', playInitOnInteraction, { once: true });
+                document.addEventListener('click', playInitOnInteraction, { once: true });
+            }
+            
+            // Fallback events for all devices
             document.addEventListener('keydown', playInitOnInteraction, { once: true });
-            document.addEventListener('touchstart', playInitOnInteraction, { once: true });
             document.addEventListener('pointerdown', playInitOnInteraction, { once: true });
             
             initSectionIndicator();
@@ -2716,6 +2898,16 @@
 
         // Sound mute toggle function
         function toggleSound() {
+            // Activate audio context on mobile when user clicks sound button
+            if (!audioContext) {
+                initSounds();
+            }
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume().catch(() => {
+                    // Silent fail
+                });
+            }
+            
             soundMuted = !soundMuted;
             const muteBtn = document.getElementById('mute-btn');
             if (muteBtn) {
