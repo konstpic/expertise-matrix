@@ -126,6 +126,78 @@
             animation: terminal-glow 1.5s ease-in-out infinite alternate;
             text-align: center;
             font-weight: bold;
+            position: relative;
+            transition: transform 0.1s, opacity 0.1s, filter 0.1s;
+        }
+
+        .hero-title .neon-normal {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+            display: inline-block;
+        }
+
+        .hero-title .neon-burnt {
+            color: #00ff00;
+            text-shadow: 0 0 2px #00ff00;
+            display: inline-block;
+            opacity: 0.15;
+            filter: brightness(0.2);
+            transition: opacity 0.2s, filter 0.2s, color 0.2s, text-shadow 0.2s;
+        }
+
+        .hero-title .neon-burnt.lit {
+            opacity: 1;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+            filter: brightness(1);
+            animation: neon-blink-sequence 0.6s;
+        }
+
+        .hero-title.glitch-active {
+            animation: terminal-glow 1.5s ease-in-out infinite alternate, glitch-flicker 0.3s steps(20);
+        }
+
+        .hero-title.glitch-active .neon-burnt {
+            animation: glitch-flicker 0.3s steps(20);
+        }
+
+        @keyframes neon-blink-sequence {
+            0% {
+                opacity: 1;
+                color: #00ff00;
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+                filter: brightness(1);
+            }
+            15% {
+                opacity: 0.3;
+                color: #00ff41;
+                text-shadow: 0 0 3px #00ff41;
+                filter: brightness(0.4);
+            }
+            30% {
+                opacity: 1;
+                color: #00ff00;
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+                filter: brightness(1);
+            }
+            45% {
+                opacity: 0.25;
+                color: #39ff14;
+                text-shadow: 0 0 2px #39ff14;
+                filter: brightness(0.35);
+            }
+            60% {
+                opacity: 1;
+                color: #00ff00;
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+                filter: brightness(1);
+            }
+            100% {
+                opacity: 1;
+                color: #00ff00;
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+                filter: brightness(1);
+            }
         }
 
         .hero-subtitle {
@@ -187,6 +259,135 @@
             }
             to {
                 text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+            }
+        }
+
+        @keyframes glitch-flicker {
+            0% {
+                transform: translate(0);
+                opacity: 1;
+                filter: hue-rotate(0deg) brightness(1);
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+            }
+            5% {
+                transform: translate(-4px, 2px);
+                opacity: 0.8;
+                filter: hue-rotate(15deg) brightness(1.2);
+                text-shadow: -4px 2px 10px #00ff00, -4px 2px 20px #00ff41, 0 0 30px #00ff00;
+            }
+            10% {
+                transform: translate(4px, -2px);
+                opacity: 0.85;
+                filter: hue-rotate(-15deg) brightness(0.8);
+                text-shadow: 4px -2px 10px #00ff00, 4px -2px 20px #39ff14, 0 0 30px #00ff00;
+            }
+            15% {
+                transform: translate(-3px, -3px);
+                opacity: 0.9;
+                filter: hue-rotate(20deg) brightness(1.1);
+                text-shadow: -3px -3px 10px #00ff00, -3px -3px 20px #00ff7f, 0 0 30px #00ff00;
+            }
+            20% {
+                transform: translate(3px, 3px);
+                opacity: 0.75;
+                filter: hue-rotate(-20deg) brightness(0.7);
+                text-shadow: 3px 3px 10px #00ff00, 3px 3px 20px #00ff41, 0 0 30px #00ff00;
+            }
+            25% {
+                transform: translate(-5px, 0);
+                opacity: 0.88;
+                filter: hue-rotate(25deg) brightness(1.3);
+                text-shadow: -5px 0 10px #00ff00, -5px 0 20px #00ff00, 0 0 30px #00ff00;
+            }
+            30% {
+                transform: translate(5px, 0);
+                opacity: 0.82;
+                filter: hue-rotate(-25deg) brightness(0.6);
+                text-shadow: 5px 0 10px #00ff00, 5px 0 20px #00ff00, 0 0 30px #00ff00;
+            }
+            35% {
+                transform: translate(0, -4px);
+                opacity: 0.92;
+                filter: hue-rotate(10deg) brightness(1.1);
+                text-shadow: 0 -4px 10px #00ff00, 0 -4px 20px #00ff00, 0 0 30px #00ff00;
+            }
+            40% {
+                transform: translate(0, 4px);
+                opacity: 0.78;
+                filter: hue-rotate(-10deg) brightness(0.9);
+                text-shadow: 0 4px 10px #00ff00, 0 4px 20px #00ff00, 0 0 30px #00ff00;
+            }
+            45% {
+                transform: translate(-2px, 4px);
+                opacity: 0.85;
+                filter: hue-rotate(18deg) brightness(1.15);
+                text-shadow: -2px 4px 10px #00ff00, -2px 4px 20px #00ff41, 0 0 30px #00ff00;
+            }
+            50% {
+                transform: translate(2px, -4px);
+                opacity: 0.9;
+                filter: hue-rotate(-18deg) brightness(0.85);
+                text-shadow: 2px -4px 10px #00ff00, 2px -4px 20px #39ff14, 0 0 30px #00ff00;
+            }
+            55% {
+                transform: translate(-6px, 1px);
+                opacity: 0.8;
+                filter: hue-rotate(30deg) brightness(1.25);
+                text-shadow: -6px 1px 10px #00ff00, -6px 1px 20px #00ff7f, 0 0 30px #00ff00;
+            }
+            60% {
+                transform: translate(6px, -1px);
+                opacity: 0.88;
+                filter: hue-rotate(-30deg) brightness(0.75);
+                text-shadow: 6px -1px 10px #00ff00, 6px -1px 20px #00ff00, 0 0 30px #00ff00;
+            }
+            65% {
+                transform: translate(-1px, -5px);
+                opacity: 0.83;
+                filter: hue-rotate(12deg) brightness(1.05);
+                text-shadow: -1px -5px 10px #00ff00, -1px -5px 20px #00ff41, 0 0 30px #00ff00;
+            }
+            70% {
+                transform: translate(1px, 5px);
+                opacity: 0.87;
+                filter: hue-rotate(-12deg) brightness(0.95);
+                text-shadow: 1px 5px 10px #00ff00, 1px 5px 20px #39ff14, 0 0 30px #00ff00;
+            }
+            75% {
+                transform: translate(-4px, -2px);
+                opacity: 0.81;
+                filter: hue-rotate(22deg) brightness(1.2);
+                text-shadow: -4px -2px 10px #00ff00, -4px -2px 20px #00ff7f, 0 0 30px #00ff00;
+            }
+            80% {
+                transform: translate(4px, 2px);
+                opacity: 0.89;
+                filter: hue-rotate(-22deg) brightness(0.8);
+                text-shadow: 4px 2px 10px #00ff00, 4px 2px 20px #00ff00, 0 0 30px #00ff00;
+            }
+            85% {
+                transform: translate(-3px, 3px);
+                opacity: 0.84;
+                filter: hue-rotate(8deg) brightness(1.1);
+                text-shadow: -3px 3px 10px #00ff00, -3px 3px 20px #00ff41, 0 0 30px #00ff00;
+            }
+            90% {
+                transform: translate(3px, -3px);
+                opacity: 0.86;
+                filter: hue-rotate(-8deg) brightness(0.9);
+                text-shadow: 3px -3px 10px #00ff00, 3px -3px 20px #39ff14, 0 0 30px #00ff00;
+            }
+            95% {
+                transform: translate(-2px, 0);
+                opacity: 0.91;
+                filter: hue-rotate(5deg) brightness(1.05);
+                text-shadow: -2px 0 10px #00ff00, -2px 0 20px #00ff00, 0 0 30px #00ff00;
+            }
+            100% {
+                transform: translate(0);
+                opacity: 1;
+                filter: hue-rotate(0deg) brightness(1);
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
             }
         }
 
@@ -1065,7 +1266,9 @@
 
     <!-- Hero Section with 3D Sphere -->
     <section class="hero-section">
-        <h1 class="hero-title">KONSTANTIN PICHUGIN</h1>
+        <h1 class="hero-title">
+            <span class="neon-normal">KONST</span><span class="neon-burnt">ANTIN</span> <span class="neon-normal">PIC</span><span class="neon-burnt">HUGIN</span>
+        </h1>
         <p class="hero-subtitle">Full-Stack Beginner Developer | DevOps Engineer</p>
         
         <div class="status-banner">
@@ -2003,6 +2206,85 @@
         
         let wheelTimeout;
 
+        // Initialize glitch effect for hero title
+        function initGlitchEffect() {
+            const heroTitle = document.querySelector('.hero-title');
+            if (!heroTitle) return;
+            
+            function triggerGlitch() {
+                heroTitle.classList.add('glitch-active');
+                setTimeout(() => {
+                    heroTitle.classList.remove('glitch-active');
+                }, 300); // Duration of glitch animation
+            }
+            
+            // Trigger glitch periodically (every 3-6 seconds randomly)
+            function scheduleNextGlitch() {
+                const delay = 3000 + Math.random() * 3000; // 3-6 seconds
+                setTimeout(() => {
+                    triggerGlitch();
+                    scheduleNextGlitch();
+                }, delay);
+            }
+            
+            // Start after initial delay
+            setTimeout(() => {
+                scheduleNextGlitch();
+            }, 2000);
+        }
+
+        // Initialize asynchronous neon blink effect for burnt parts
+        function initNeonBlinkEffect() {
+            const burntParts = document.querySelectorAll('.hero-title .neon-burnt');
+            if (burntParts.length === 0) return;
+            
+            // Function to trigger lighting sequence (2-3 blinks, then turn off)
+            function triggerLight(element) {
+                const blinkCount = 2 + Math.floor(Math.random() * 2); // 2 or 3 blinks
+                let currentBlink = 0;
+                
+                // Turn on the light
+                element.classList.add('lit');
+                
+                function doBlink() {
+                    if (currentBlink < blinkCount) {
+                        currentBlink++;
+                        // Small delay between blinks
+                        setTimeout(doBlink, 200);
+                    } else {
+                        // After all blinks, turn off
+                        setTimeout(() => {
+                            element.classList.remove('lit');
+                        }, 600); // Duration of blink animation
+                    }
+                }
+                
+                // Start blinking after a short delay
+                setTimeout(() => {
+                    doBlink();
+                }, 100);
+            }
+            
+            // Schedule blinking for each part independently
+            burntParts.forEach((element, index) => {
+                // Different initial delay for each part (asynchronous)
+                const initialDelay = 3000 + Math.random() * 2000 + (index * 800);
+                
+                function scheduleNextLight() {
+                    const delay = 2000 + Math.random() * 2000; // 2-4 seconds between lights
+                    setTimeout(() => {
+                        triggerLight(element);
+                        scheduleNextLight();
+                    }, delay);
+                }
+                
+                // Start after initial delay
+                setTimeout(() => {
+                    scheduleNextLight();
+                }, initialDelay);
+            });
+        }
+
         // Initialize section indicator on load
         function initializePage() {
             initSounds();
@@ -2022,6 +2304,8 @@
             initCustomCursor();
             initSectionClickHandlers();
             initControlButtons();
+            initGlitchEffect();
+            initNeonBlinkEffect();
         }
         
         if (document.readyState === 'loading') {
