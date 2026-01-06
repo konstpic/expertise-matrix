@@ -486,6 +486,60 @@
             z-index: 1001;
         }
 
+        /* Control buttons container */
+        .control-buttons {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            font-family: 'Courier New', Courier, 'Consolas', 'Monaco', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .control-buttons {
+                display: none; /* Hide on mobile */
+            }
+        }
+
+        .control-button {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: none;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            transition: all 0.3s ease-out;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), inset 0 0 20px rgba(0, 255, 0, 0.1);
+            user-select: none;
+        }
+
+        .control-button:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), inset 0 0 30px rgba(0, 255, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6), inset 0 0 15px rgba(0, 255, 0, 0.15);
+        }
+
+        .control-button.muted {
+            border-color: #ff4444;
+            color: #ff4444;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5), inset 0 0 20px rgba(255, 68, 68, 0.1);
+        }
+
+        .control-button.muted:hover {
+            background: rgba(255, 68, 68, 0.1);
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.8), inset 0 0 30px rgba(255, 68, 68, 0.2);
+        }
+
         .section-indicator-label {
             font-size: 10px;
             color: #00ff41;
@@ -984,6 +1038,12 @@
     </style>
 </head>
 <body>
+    <!-- Control Buttons (Desktop only) -->
+    <div class="control-buttons">
+        <button class="control-button" id="fullscreen-btn" title="Toggle Fullscreen">[FULLSCREEN]</button>
+        <button class="control-button" id="mute-btn" title="Toggle Sound">[SOUND ON]</button>
+    </div>
+
     <!-- Section Indicator -->
     <div class="section-indicator">
         <div class="section-indicator-label">Section</div>
@@ -1269,6 +1329,158 @@
     </section>
 
     <script>
+        // Sound effects using Web Audio API for reliable programmatic sound generation
+        let audioContext;
+        let initSoundPlayed = false;
+        let soundMuted = false;
+        
+        function initSounds() {
+            try {
+                // Initialize Web Audio API context
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioContext = new AudioContextClass();
+                    // Try to resume audio context immediately (may require user interaction)
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume().catch(() => {
+                            // Will be resumed on user interaction
+                        });
+                    }
+                }
+            } catch (e) {
+                console.log('Web Audio API not available:', e);
+            }
+        }
+        
+        // Function to activate audio context and play init sound
+        function activateAudioAndPlayInit() {
+            if (!audioContext) {
+                initSounds();
+            }
+            
+            if (audioContext) {
+                // Resume audio context if suspended
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        if (!initSoundPlayed) {
+                            playInitSound();
+                        }
+                    }).catch(() => {
+                        // Silent fail - will retry on next interaction
+                    });
+                } else {
+                    if (!initSoundPlayed) {
+                        playInitSound();
+                    }
+                }
+            }
+        }
+
+        function createInitSound() {
+            if (!audioContext) return null;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Create a startup/initialization sound: ascending tone
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                
+                return oscillator;
+            } catch (e) {
+                console.log('Failed to create init sound:', e);
+                return null;
+            }
+        }
+
+        function createTypingSound() {
+            if (!audioContext) return null;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Create a softer keyboard click sound: sine wave with lower frequency
+                oscillator.type = 'sine'; // Softer than square wave
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(500, audioContext.currentTime + 0.025);
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.002); // Softer volume
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.04); // Longer fade
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.04);
+                
+                return oscillator;
+            } catch (e) {
+                console.log('Failed to create typing sound:', e);
+                return null;
+            }
+        }
+
+        function playInitSound() {
+            if (initSoundPlayed || soundMuted) return;
+            
+            try {
+                // Resume audio context if suspended
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        createInitSound();
+                        initSoundPlayed = true;
+                    }).catch(() => {
+                        // Silent fail - audio will activate on next user interaction
+                    });
+                } else {
+                    createInitSound();
+                    initSoundPlayed = true;
+                }
+            } catch (e) {
+                // Silent fail - audio will activate on next user interaction
+            }
+        }
+
+        function playTypingSound() {
+            if (soundMuted) return;
+            
+            try {
+                // Ensure audio context exists
+                if (!audioContext) {
+                    initSounds();
+                }
+                
+                // Resume audio context if suspended
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        createTypingSound();
+                    }).catch(e => {
+                        // Silent fail for typing sounds
+                    });
+                } else if (audioContext) {
+                    createTypingSound();
+                }
+            } catch (e) {
+                // Silent fail for typing sounds
+            }
+        }
+
+
         const technologies = [
             // Infrastructure
             { text: 'Docker', class: 'infrastructure', command: 'docker ps' },
@@ -1307,9 +1519,13 @@
         const terminalOutput = document.getElementById('terminal-output');
         let currentTechIndex = 0;
         let isTyping = false;
+        
+        // Track active typing animations to prevent overlapping sounds
+        let activeTypingTimers = new Set();
+        let currentTypingSection = null;
 
         // Typewriter effect
-        function typeText(element, text, speed = 50, callback) {
+        function typeText(element, text, speed = 100, callback) {
             if (isTyping) return;
             isTyping = true;
             element.textContent = '';
@@ -1317,9 +1533,19 @@
             
             function type() {
                 if (index < text.length) {
-                    element.textContent += text[index];
+                    const char = text[index];
+                    element.textContent += char;
+                    
+                    // Play typing sound only for non-space characters
+                    if (char !== ' ') {
+                        playTypingSound();
+                    }
+                    
                     index++;
-                    setTimeout(type, speed);
+                    
+                    // Faster typing for spaces (no sound), slower for regular characters
+                    const charSpeed = char === ' ' ? speed * 0.3 : speed + Math.random() * 30;
+                    setTimeout(type, charSpeed);
                 } else {
                     isTyping = false;
                     if (callback) callback();
@@ -1337,7 +1563,7 @@
             terminalOutput.innerHTML = '';
             
             // Type command
-            typeText(commandText, tech.command, 30, () => {
+            typeText(commandText, tech.command, 100, () => {
                 // Wait a bit, then show output
                 setTimeout(() => {
                     const outputLine = document.createElement('div');
@@ -1370,7 +1596,7 @@
         showTechnology(0);
 
         // Terminal typing effect function
-        function typeText(element, text, speed = 30, callback) {
+        function typeText(element, text, speed = 100, callback) {
             if (!element || !text) return;
             
             element.textContent = '';
@@ -1379,20 +1605,72 @@
             element.style.opacity = '1';
             
             let index = 0;
+            let timerId = null;
+            let isCancelled = false;
             
             function type() {
+                // Check if animation was cancelled
+                if (isCancelled) {
+                    if (timerId) {
+                        activeTypingTimers.delete(timerId);
+                    }
+                    return;
+                }
+                
                 if (index < text.length) {
-                    element.textContent += text[index];
+                    const char = text[index];
+                    element.textContent += char;
+                    
+                    // Play typing sound only for non-space characters
+                    if (char !== ' ') {
+                        playTypingSound();
+                    }
+                    
                     index++;
-                    setTimeout(type, speed + Math.random() * 20); // Random speed variation for realism
+                    
+                    // Faster typing for spaces (no sound), slower for regular characters
+                    const charSpeed = char === ' ' ? speed * 0.3 : speed + Math.random() * 30;
+                    timerId = setTimeout(type, charSpeed);
+                    activeTypingTimers.add(timerId);
                 } else {
+                    if (timerId) {
+                        activeTypingTimers.delete(timerId);
+                    }
                     element.classList.add('typing-complete');
                     element.classList.remove('typing-element');
                     if (callback) callback();
                 }
             }
             
+            // Store cancel function on element for later cleanup
+            element._cancelTyping = () => {
+                isCancelled = true;
+                if (timerId) {
+                    clearTimeout(timerId);
+                    activeTypingTimers.delete(timerId);
+                }
+            };
+            
             type();
+        }
+        
+        // Stop all active typing animations
+        function stopAllTypingAnimations() {
+            // Clear all active timers
+            activeTypingTimers.forEach(timerId => {
+                clearTimeout(timerId);
+            });
+            activeTypingTimers.clear();
+            
+            // Cancel all active typing animations on elements
+            document.querySelectorAll('[data-original-text], .typing-element').forEach(element => {
+                if (element._cancelTyping) {
+                    element._cancelTyping();
+                }
+                // Remove typing classes
+                element.classList.remove('typing-element');
+                element.classList.add('typing-complete');
+            });
         }
 
         // Store original text content for typing animation
@@ -1431,6 +1709,12 @@
 
         // Type all text elements in sequence
         function typeSectionContent(section) {
+            // Stop any previous typing animations
+            if (currentTypingSection && currentTypingSection !== section) {
+                stopAllTypingAnimations();
+            }
+            currentTypingSection = section;
+            
             // Get all text elements in order
             const mainTextElements = Array.from(section.querySelectorAll('h2, h3:not(.project-card h3):not(.philosophy-card h3):not(.achievement-card h4), h4:not(.achievement-card h4), p:not(.project-card p):not(.philosophy-card p):not(.achievement-card p)')).filter(el => el.dataset.originalText);
             
@@ -1443,30 +1727,54 @@
                 return position & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
             });
 
-            let delay = 0;
             const processedCards = new Set();
+            let currentElementIndex = 0;
 
-            allTextElements.forEach((element) => {
-                const originalText = element.dataset.originalText;
-                const typingSpeed = element.tagName === 'H2' ? 25 : element.tagName === 'H3' || element.tagName === 'H4' ? 30 : 20;
-                
-                setTimeout(() => {
-                    typeText(element, originalText, typingSpeed, () => {
-                        // Show card after its header is typed
-                        const parentCard = element.closest('.project-card, .philosophy-card, .achievement-card');
-                        if (parentCard && !processedCards.has(parentCard)) {
-                            processedCards.add(parentCard);
+            // Function to type next element sequentially
+            function typeNextElement() {
+                // Check if we've typed all elements
+                if (currentElementIndex >= allTextElements.length) {
+                    // Show other elements after all text is typed
+                    setTimeout(() => {
+                        const otherElements = section.querySelectorAll('.stat-card, .contact-link, .stats-container, .projects-grid, .achievements-grid, .philosophy-grid, .contact-grid');
+                        otherElements.forEach((el, idx) => {
                             setTimeout(() => {
-                                parentCard.style.opacity = '1';
-                                parentCard.style.transform = 'translateX(0)';
-                                parentCard.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
-                            }, 100);
-                        }
-                    });
-                }, delay);
+                                el.style.opacity = '1';
+                                el.style.transform = 'translateX(0)';
+                                el.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                            }, idx * 50);
+                        });
+                    }, 200);
+                    return;
+                }
+
+                const element = allTextElements[currentElementIndex];
+                const originalText = element.dataset.originalText;
+                const typingSpeed = 100; // Unified speed for all elements
                 
-                delay += originalText.length * typingSpeed + 200;
-            });
+                // Type current element, then move to next
+                typeText(element, originalText, typingSpeed, () => {
+                    // Show card after its header is typed
+                    const parentCard = element.closest('.project-card, .philosophy-card, .achievement-card');
+                    if (parentCard && !processedCards.has(parentCard)) {
+                        processedCards.add(parentCard);
+                        setTimeout(() => {
+                            parentCard.style.opacity = '1';
+                            parentCard.style.transform = 'translateX(0)';
+                            parentCard.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                        }, 100);
+                    }
+                    
+                    // Small delay before next element starts typing
+                    setTimeout(() => {
+                        currentElementIndex++;
+                        typeNextElement();
+                    }, 150);
+                });
+            }
+
+            // Start typing first element
+            typeNextElement();
 
             // Show other elements (stat cards, links, grids) after text typing
             setTimeout(() => {
@@ -1495,6 +1803,9 @@
                 if (entry.intersectionRatio >= 0.95 && !entry.target.classList.contains('terminal-reveal')) {
                     entry.target.classList.add('terminal-reveal');
                     
+                    // Stop previous animations before starting new one
+                    stopAllTypingAnimations();
+                    
                     // Prepare elements for typing
                     prepareTypingElements(entry.target);
                     
@@ -1502,6 +1813,12 @@
                     setTimeout(() => {
                         typeSectionContent(entry.target);
                     }, 600);
+                } else if (entry.intersectionRatio < 0.5) {
+                    // If section is no longer visible, stop its animations
+                    if (currentTypingSection === entry.target) {
+                        stopAllTypingAnimations();
+                        currentTypingSection = null;
+                    }
                 }
             });
         }, observerOptions);
@@ -1548,6 +1865,10 @@
 
         function scrollToSection(index, direction = 0) {
             if (isScrolling) return;
+            
+            // Stop all typing animations when switching sections
+            stopAllTypingAnimations();
+            currentTypingSection = null;
             
             // Get all sections including hero-section
             const heroSection = document.querySelector('.hero-section');
@@ -1683,26 +2004,40 @@
         let wheelTimeout;
 
         // Initialize section indicator on load
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                initSectionIndicator();
-                initCustomCursor();
-                initSectionClickHandlers();
-            });
-        } else {
+        function initializePage() {
+            initSounds();
+            
+            // Activate audio on first user interaction (mouse movement counts as interaction)
+            const playInitOnInteraction = () => {
+                activateAudioAndPlayInit();
+            };
+            // Use mousemove as primary trigger - it's the least intrusive interaction
+            document.addEventListener('mousemove', playInitOnInteraction, { once: true });
+            document.addEventListener('click', playInitOnInteraction, { once: true });
+            document.addEventListener('keydown', playInitOnInteraction, { once: true });
+            document.addEventListener('touchstart', playInitOnInteraction, { once: true });
+            document.addEventListener('pointerdown', playInitOnInteraction, { once: true });
+            
             initSectionIndicator();
             initCustomCursor();
             initSectionClickHandlers();
+            initControlButtons();
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
         }
 
-        // Fullscreen mode function
+        // Fullscreen mode function (optional - can be triggered manually if needed)
         function initFullscreen() {
             function requestFullscreen() {
                 const element = document.documentElement;
                 
                 if (element.requestFullscreen) {
-                    element.requestFullscreen().catch(err => {
-                        console.log('Fullscreen request failed:', err);
+                    element.requestFullscreen().catch(() => {
+                        // Silent fail - fullscreen requires user gesture
                     });
                 } else if (element.webkitRequestFullscreen) {
                     element.webkitRequestFullscreen();
@@ -1713,8 +2048,8 @@
                 }
             }
 
-            // Request fullscreen immediately
-            requestFullscreen();
+            // Only request fullscreen if user explicitly wants it
+            // Removed automatic request to avoid permission errors
 
             // Add class and hide scrollbar when fullscreen is active
             function handleFullscreenChange() {
@@ -1743,17 +2078,89 @@
             document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         }
 
-        // Request fullscreen on click
-        let fullscreenInitialized = false;
-        function requestFullscreenOnClick() {
-            if (!fullscreenInitialized) {
-                fullscreenInitialized = true;
-                initFullscreen();
+        // Initialize fullscreen handlers (but don't request fullscreen automatically)
+        initFullscreen();
+
+        // Fullscreen toggle function
+        function toggleFullscreen() {
+            const element = document.documentElement;
+            const isFullscreen = document.fullscreenElement || 
+                                document.webkitFullscreenElement || 
+                                document.mozFullScreenElement || 
+                                document.msFullscreenElement;
+            
+            if (!isFullscreen) {
+                // Enter fullscreen
+                if (element.requestFullscreen) {
+                    element.requestFullscreen().catch(() => {
+                        // Silent fail
+                    });
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             }
         }
-        
-        // Listen for first click to initialize fullscreen
-        document.addEventListener('click', requestFullscreenOnClick, { once: true });
+
+        // Sound mute toggle function
+        function toggleSound() {
+            soundMuted = !soundMuted;
+            const muteBtn = document.getElementById('mute-btn');
+            if (muteBtn) {
+                if (soundMuted) {
+                    muteBtn.textContent = '[SOUND OFF]';
+                    muteBtn.classList.add('muted');
+                } else {
+                    muteBtn.textContent = '[SOUND ON]';
+                    muteBtn.classList.remove('muted');
+                }
+            }
+        }
+
+        // Initialize control buttons
+        function initControlButtons() {
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const muteBtn = document.getElementById('mute-btn');
+            
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', toggleFullscreen);
+            }
+            
+            if (muteBtn) {
+                muteBtn.addEventListener('click', toggleSound);
+            }
+            
+            // Update fullscreen button text based on current state
+            function updateFullscreenButton() {
+                const isFullscreen = document.fullscreenElement || 
+                                    document.webkitFullscreenElement || 
+                                    document.mozFullScreenElement || 
+                                    document.msFullscreenElement;
+                if (fullscreenBtn) {
+                    fullscreenBtn.textContent = isFullscreen ? '[EXIT FS]' : '[FULLSCREEN]';
+                }
+            }
+            
+            // Listen for fullscreen changes
+            document.addEventListener('fullscreenchange', updateFullscreenButton);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+            document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+            document.addEventListener('MSFullscreenChange', updateFullscreenButton);
+        }
 
         // Simple scroll binding - update indicator directly on scroll
         window.addEventListener('scroll', () => {
@@ -1812,7 +2219,7 @@
             animateCursor();
 
             // Cursor hover effects
-            const hoverElements = document.querySelectorAll('a, button, .section-number, .project-link, .contact-link');
+            const hoverElements = document.querySelectorAll('a, button, .section-number, .project-link, .contact-link, .control-button');
             hoverElements.forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     cursor.classList.add('hover');
