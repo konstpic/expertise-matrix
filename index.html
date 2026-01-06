@@ -29,6 +29,55 @@
             overflow-x: hidden;
             text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
             cursor: none; /* Hide default cursor */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        body::-webkit-scrollbar {
+            display: none !important; /* Chrome, Safari, Opera */
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+        }
+
+        html {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        html::-webkit-scrollbar {
+            display: none !important; /* Chrome, Safari, Opera */
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+        }
+
+        /* Hide scrollbar for all elements */
+        * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        *::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+        }
+
+        /* Additional fullscreen scrollbar hiding */
+        html.fullscreen-active,
+        html.fullscreen-active body {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        html.fullscreen-active::-webkit-scrollbar,
+        html.fullscreen-active body::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
         }
 
         /* Custom hacker green cursor - pointer style */
@@ -1577,6 +1626,32 @@
 
             // Request fullscreen immediately
             requestFullscreen();
+
+            // Add class and hide scrollbar when fullscreen is active
+            function handleFullscreenChange() {
+                const isFullscreen = document.fullscreenElement || 
+                                    document.webkitFullscreenElement || 
+                                    document.mozFullScreenElement || 
+                                    document.msFullscreenElement;
+                
+                if (isFullscreen) {
+                    document.body.classList.add('fullscreen-active');
+                    document.documentElement.classList.add('fullscreen-active');
+                    // Force hide scrollbar via inline styles
+                    document.body.style.scrollbarWidth = 'none';
+                    document.body.style.msOverflowStyle = 'none';
+                    document.documentElement.style.scrollbarWidth = 'none';
+                    document.documentElement.style.msOverflowStyle = 'none';
+                } else {
+                    document.body.classList.remove('fullscreen-active');
+                    document.documentElement.classList.remove('fullscreen-active');
+                }
+            }
+
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         }
 
         // Request fullscreen on click
